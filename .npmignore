@@ -1,0 +1,7 @@
+/aot
+
+/src
+
+*.ngfactory.ts
+
+documentation

@@ -1,0 +1,60 @@
+{
+	"name": "kio-ng2-image",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./release",
+	"module": "./release/module.js",
+	"typings": "./release/module.d.ts",	
+	"scripts": {
+		"test": "ts-mocha ./src/**/*.spec.ts",
+		"pretest": "npm run build",
+		"test:watch": "./scripts/watch.sh test",
+		"lint": "tslint ./src/**/*.ts ./test/**/*.ts",
+		"version": "npm run build",
+		"postversion": "git push && git push --tags",
+		"predoc": "rm -rf ./documentation",
+		"doc": "compodoc -p ./tsconfig-doc.json -d ./documentation/",
+		"deploy:release": "rm -rf ./release; mv ./build release",
+		"transpile": "npm run ngModule:build",
+		"ngModule:build": "./scripts/ngModule.sh build",
+		"ngModule:copy": "echo ./scripts/ngModule.sh copy /Users/tEErohr/Documents/kio/angular2/digit/digit-dev/digit-bma",
+		"build": "npm run ngModule:build && npm run ngModule:copy",
+		"build:release": "NODE_ENV=production npm run build && npm run deploy:release",
+		"build:release:watch": "./scripts/watch.sh build:release"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/afkm/kio-ng2-image.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/afkm/kio-ng2-image/issues"
+	},
+	"homepage": "https://github.com/afkm/kio-ng2-image#readme",
+	"devDependencies": {
+		"@angular/compiler-cli": "^4.3.6",
+		"@compodoc/compodoc": "^1.0.1",
+		"@types/chai": "^4.0.4",
+		"@types/mocha": "^2.2.43",
+		"@types/node": "^8.0.28",
+		"compodoc": "0.0.41",
+		"mocha": "^3.5.3",
+		"nodemon": "^1.12.0",
+		"ts-mocha": "^1.0.3",
+		"ts-node": "^3.3.0",
+		"tslint": "^5.7.0",
+		"typescript": "^2.5.2"
+	},
+	"dependencies": {
+		"@angular/common": "^4.3.6",
+		"@angular/compiler": "^4.3.6",
+		"@angular/core": "^4.3.6",
+		"@angular/platform-browser": "^4.3.6",
+		"@angular/platform-browser-dynamic": "^4.3.6",
+		"@types/showdown": "^1.7.1",
+		"rxjs": "^5.4.3",
+		"zone.js": "^0.8.17"
+	}
+}
