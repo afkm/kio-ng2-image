@@ -1,0 +1,3 @@
+<div class="image-container" [attr.data-cuid]="node?.cuid" [ngClass]="{'all-fixed': allFixed, 'loading': hasPlaceholder, 'portrait': (imageOrientation==='portrait'),'landscape': (imageOrientation==='landscape')}" [ngStyle]="containerStyle" #imageContainer>
+  <ctn-image *ngIf="!!imageUrl" [ngStyle]="imgStyle" (error)="onLoadError()" (load)="onImageLoad($event)" (loadStart)="onImageLoadStart($event)" [src]="imageUrl"></ctn-image>
+</div>

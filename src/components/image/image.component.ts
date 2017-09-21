@@ -1,10 +1,10 @@
 //import '../../../../debug'
-import { Component, Input, ViewChild, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, OnChanges, SimpleChanges, SimpleChange, ViewEncapsulation, Output, EventEmitter } from '@angular/core'
+import { isDevMode, Component, Input, ViewChild, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, OnChanges, SimpleChanges, SimpleChange, ViewEncapsulation, Output, EventEmitter } from '@angular/core'
 import { Observable, Subscription, AsyncSubject, Observer, Scheduler } from 'rxjs'
 import { KioContent, KioSrcData, KioContentState } from 'kio-ng2-data'
-import { RoutableComponent, ContentDataComponent, ContentLoaderDirective, ResizingService } from '../../../component-routing/module'
+import { RoutableComponent, ContentDataComponent, ContentLoaderDirective, ResizingService } from 'kio-ng2-component-routing'
 import { LocaleService } from 'kio-ng2-i18n'
-import { BackendService, DataDirective } from '../../../ctn/module'
+import { BackendService, DataDirective } from 'kio-ng2-ctn'
 import * as urlUtils from 'url'
 
 
@@ -13,7 +13,7 @@ const SIZE_BOUNCE = 350
 const KIO_IMG_URL = 'https://kioget.37x.io/img'
 
 
-type ISize = {
+export type ISize = {
   width: number
   height: number
 }
@@ -36,9 +36,10 @@ const applyScale = ( scale:number ) => ( size:ISize ) => {
 }
 
 @RoutableComponent({
+  moduleId: module.id,
   selector: 'publication-image',
-  templateUrl: './image.component.html',
-  styleUrls: ['./image.component.scss'],
+  templateUrl: 'image.component.html',
+  styleUrls: ['image.component.scss'],
   encapsulation: ViewEncapsulation.None,
   queryable: {
     type: 'src' ,
@@ -73,16 +74,16 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return this.isPreview ? this.imageScale : 1
   }
 
-  onLoadError () {
+  onLoadError ():void {
     this.data = null
     setTimeout(()=>this.loadNodeContent(),1000)
   }
 
-  onImageLoadStart(event){
+  onImageLoadStart(event:any):void{
     this.updateContentState ( KioContentState.loading )
   }
 
-  onImageLoad(event){
+  onImageLoad(event:any):void{
     this.updateContentState ( KioContentState.loaded )
     this.load.emit()
     if ( this.isPreview )
@@ -139,7 +140,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
 
-  resizing=this.resizingService.resize
+  resizing:Observable<{width:number,height:number}>=this.resizingService.resize
 
   sizeUpdates=this.imageSizeChanges
     .skipUntil ( this._initialized )
@@ -289,9 +290,9 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
       errors.push ( `Content parameter property w must be >= 10, but it is ${contentParams.w}` )
     if ( contentParams.h < 10 )
       errors.push ( `Content parameter property h must be >= 10, but it is ${contentParams.h}` )
-    if ( errors.length > 0 )
+    if ( errors.length > 0 && isDevMode() )
     {
-      this.logger.log('invalid content params for image %s: ', this.node.cuid, ...errors  )
+      console.error('invalid content params for image %s: ', this.node.cuid, ...errors  )
     }
     return errors.length === 0
   }
@@ -373,7 +374,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return urlUtils.format(imageUrl)
   }
 
-  loadContent() {
+  loadContent():Observable<any> {
     const self = this
     const t0 = Date.now()
     return Observable.throw(`ImageComponent::loadContent() is deprecated`)
