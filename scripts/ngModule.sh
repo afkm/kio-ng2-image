@@ -16,8 +16,12 @@ MODULE_NAME="$(basename "${_ROOT}")"
 
 function build() {
   cd "${_ROOT}"
-  rm -rf ./build
-  scp -r ./src ./build
+  if [[ -d "build" ]]; then
+    rm -rf "build"
+  fi  
+  echo "copy ${_ROOT}/src"
+  scp -r "./src" "./build"
+  echo "compile ${_ROOT}/build"
   "${NGC_BIN}" -p tsconfig-ngc.json  
 }
 
