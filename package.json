@@ -2,8 +2,8 @@
 	"name": "kio-ng2-image",
 	"version": "0.0.0",
 	"description": "",
-	"main": "./release",
-	"module": "./release/module.js",
+	"main": "./src/module",
+	"module": "./src/module.js",
 	"typings": "./release/module.d.ts",
 	"scripts": {
 		"test": "ts-mocha ./src/**/*.spec.ts",
@@ -14,13 +14,12 @@
 		"postversion": "git push && git push --tags",
 		"predoc": "rm -rf ./documentation",
 		"doc": "compodoc -p ./tsconfig-doc.json -d ./documentation/",
-		"deploy:release": "rm -rf ./release; mv ./build release",
 		"transpile": "npm run ngModule:build",
 		"ngModule:build": "./scripts/ngModule.sh build",
-		"ngModule:copy": "echo ./scripts/ngModule.sh copy /Users/tEErohr/Documents/kio/angular2/digit/digit-dev/digit-bma",
+		"ngModule:copy": "echo ./scripts/ngModule.sh copy /Users/tEErohr/Documents/kio/angular2/digit/digit-dev/digit-wmr",
 		"fetchdeps": "./scripts/sync_kio_module.sh component-routing ctn i18n",
 		"build": "npm run fetchdeps && npm run ngModule:build",
-		"build:release": "NODE_ENV=production npm run build && npm run deploy:release",
+		"build:release": "NODE_ENV=production npm run build",
 		"build:release:watch": "./scripts/watch.sh build:release"
 	},
 	"repository": {
@@ -73,5 +72,9 @@
 		"tslint": "^5.7.0",
 		"typescript": "^2.3.4",
 		"zone.js": "^0.8.17"
+	},
+	"dependencies": {
+		"@ngx-translate/core": "^6.0.1",
+		"@ngx-translate/http-loader": "0.0.3"
 	}
 }

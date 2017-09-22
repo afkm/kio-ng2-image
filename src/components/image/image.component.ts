@@ -36,10 +36,9 @@ const applyScale = ( scale:number ) => ( size:ISize ) => {
 }
 
 @RoutableComponent({
-  moduleId: module.id,
   selector: 'publication-image',
-  templateUrl: 'image.component.html',
-  styleUrls: ['image.component.scss'],
+  templateUrl: './image.component.html',
+  styleUrls: ['./image.component.scss'],
   encapsulation: ViewEncapsulation.None,
   queryable: {
     type: 'src' ,
@@ -226,12 +225,12 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected onNodeUpdate ( ) {
-    if ( this._node && this._node.headers.color )
+    if ( this.node && this.node.headers.color )
     {
-      this.updateContainerStyle({'background-color': this._node.headers.color})
+      this.updateContainerStyle({'background-color': this.node.headers.color})
       this._initialized.emit(true)
     }
-    if ( this._node && this._node.modifiers.indexOf('force-highres') > -1 ) {
+    if ( this.node && this.node.modifiers.indexOf('force-highres') > -1 ) {
       this.forceHighResolution = true
     }
     super.onNodeUpdate()

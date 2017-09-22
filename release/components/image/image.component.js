@@ -206,6 +206,10 @@ var ImageComponent = /** @class */ (function (_super) {
     ImageComponent.prototype.onNodeUpdate = function () {
         if (this.node && this.node.headers.color) {
             this.updateContainerStyle({ 'background-color': this.node.headers.color });
+            this._initialized.emit(true);
+        }
+        if (this.node && this.node.modifiers.indexOf('force-highres') > -1) {
+            this.forceHighResolution = true;
         }
         _super.prototype.onNodeUpdate.call(this);
     };
@@ -376,8 +380,8 @@ var ImageComponent = /** @class */ (function (_super) {
         RoutableComponent({
             moduleId: module.id,
             selector: 'publication-image',
-            templateUrl: 'image.component.html',
-            styleUrls: ['image.component.scss'],
+            templateUrl: './image.component.html',
+            styleUrls: ['./image.component.scss'],
             encapsulation: ViewEncapsulation.None,
             queryable: {
                 type: 'src',
