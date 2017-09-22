@@ -301,10 +301,14 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   mapSizeToPreferredPreview ( contentSize:{width:number,height:number} ) {
+    if ( this.viewParams.bouncing === false ) {
+      return contentSize
+    }
     if ( this.imageOrientation === 'portrait' && contentSize.width > SIZE_BOUNCE )
     {
-      const previewWidth = contentSize.width - ( contentSize.width % SIZE_BOUNCE )
+      const previewWidth = contentSize.width + SIZE_BOUNCE - ( contentSize.width % SIZE_BOUNCE )
       const m = previewWidth / contentSize.width
+      // console.log('%s:ImageComponent:bouncing portrait by m = %s', this.node.cuid, m)
       return {
         width: previewWidth,
         height: Math.floor(contentSize.height * m)
@@ -312,8 +316,9 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     }
     else if ( this.imageOrientation !== 'portrait' && contentSize.height > SIZE_BOUNCE )
     {
-      const previewHeight = contentSize.height - ( contentSize.height % SIZE_BOUNCE )
+      const previewHeight = contentSize.height + SIZE_BOUNCE - ( contentSize.height % SIZE_BOUNCE )
       const m = previewHeight / contentSize.height
+      // console.log('%s:ImageComponent:bouncing landscape by m = %s', this.node.cuid, m)
       return {
         width: Math.floor(contentSize.width * m),
         height: previewHeight

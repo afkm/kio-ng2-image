@@ -265,17 +265,22 @@ var ImageComponent = /** @class */ (function (_super) {
         return errors.length === 0;
     };
     ImageComponent.prototype.mapSizeToPreferredPreview = function (contentSize) {
+        if (this.viewParams.bouncing === false) {
+            return contentSize;
+        }
         if (this.imageOrientation === 'portrait' && contentSize.width > SIZE_BOUNCE) {
-            var previewWidth = contentSize.width - (contentSize.width % SIZE_BOUNCE);
+            var previewWidth = contentSize.width + SIZE_BOUNCE - (contentSize.width % SIZE_BOUNCE);
             var m = previewWidth / contentSize.width;
+            // console.log('%s:ImageComponent:bouncing portrait by m = %s', this.node.cuid, m)
             return {
                 width: previewWidth,
                 height: Math.floor(contentSize.height * m)
             };
         }
         else if (this.imageOrientation !== 'portrait' && contentSize.height > SIZE_BOUNCE) {
-            var previewHeight = contentSize.height - (contentSize.height % SIZE_BOUNCE);
+            var previewHeight = contentSize.height + SIZE_BOUNCE - (contentSize.height % SIZE_BOUNCE);
             var m = previewHeight / contentSize.height;
+            // console.log('%s:ImageComponent:bouncing landscape by m = %s', this.node.cuid, m)
             return {
                 width: Math.floor(contentSize.width * m),
                 height: previewHeight
@@ -378,7 +383,6 @@ var ImageComponent = /** @class */ (function (_super) {
     };
     ImageComponent = __decorate([
         RoutableComponent({
-            moduleId: module.id,
             selector: 'publication-image',
             templateUrl: './image.component.html',
             styleUrls: ['./image.component.scss'],
