@@ -4,6 +4,7 @@
 		{
 			"folder_exclude_patterns":
 			[
+				"aot",
 				"node_modules"
 			],
 			"path": "."
