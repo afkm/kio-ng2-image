@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"description": "",
 	"main": "./src/module",
-	"module": "./src/module.js",
+	"module": "./src/module",
 	"typings": "./release/module.d.ts",
 	"scripts": {
 		"test": "ts-mocha ./src/**/*.spec.ts",
