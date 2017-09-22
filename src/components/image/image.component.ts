@@ -226,13 +226,17 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected onNodeUpdate ( ) {
-    if ( this.node && this.node.headers.color )
+    if ( this._node && this._node.headers.color )
     {
-      this.updateContainerStyle({'background-color': this.node.headers.color})
+      this.updateContainerStyle({'background-color': this._node.headers.color})
+      this._initialized.emit(true)
+    }
+    if ( this._node && this._node.modifiers.indexOf('force-highres') > -1 ) {
+      this.forceHighResolution = true
     }
     super.onNodeUpdate()
   }
-
+  
   protected onUpdate() {
     //super.onUpdate()
     this.imageData = this.data
