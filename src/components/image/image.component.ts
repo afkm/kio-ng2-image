@@ -7,6 +7,11 @@ import { LocaleService } from 'kio-ng2-i18n'
 import { BackendService, DataDirective } from 'kio-ng2-ctn'
 import * as urlUtils from 'url'
 
+import { MarginPosition } from 'kio-ng2-scrolling'
+
+import { IMAGE_MODULE_CONFIG } from '../../config/IMAGE_MODULE_CONFIG.token'
+import { KioNg2ImageModuleConfig } from '../../config/interfaces'
+
 const DEBOUNCE_RESIZE = 500
 const SIZE_BOUNCE = 350
 const KIO_IMG_URL = 'https://kioget.37x.io/img'
@@ -48,6 +53,7 @@ const applyScale = ( scale:number ) => ( size:ISize ) => {
 })
 export class ImageComponent extends ContentDataComponent implements AfterViewInit, OnInit, OnDestroy {
 
+  protected moduleConfig:KioNg2ImageModuleConfig=this.injector.get(IMAGE_MODULE_CONFIG)
   protected localeService:LocaleService=this.injector.get(LocaleService)
   protected resizingService:ResizingService=this.injector.get(ResizingService)
   private resizeSubscription:Subscription
@@ -66,6 +72,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return this._forceHighRes === true
   }
 
+  @Input() waitForViewport:boolean=true
   @Output() load:EventEmitter<any>=new EventEmitter<any>()
 
   stateChageTimeout:number=5000
@@ -77,7 +84,8 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return this.isPreview ? this.imageScale : 1
   }
 
-  onLoadError ():void {
+  onLoadError ( event:any ):void {
+    console.log('image load error', event)
     this.data = null
     setTimeout(()=>this.loadNodeContent(),1000)
   }
@@ -258,14 +266,25 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected onNodeUpdate ( ) {
-    if ( this.node && this.node.headers.color )
-    {
+    
+    if ( this.node && this.node.headers.color ) {
+    
       this.updateContainerStyle({'background-color': this.node.headers.color})
       this._initialized.emit(true)
+
     }
+    
     if ( this.node && this.node.modifiers.indexOf('force-highres') > -1 ) {
+    
       this.forceHighResolution = true
+    
     }
+
+    if ( !this.scrollSubscription ) {
+      this._initViewportLoading ()
+    }
+
+
     super.onNodeUpdate()
   }
 
@@ -292,6 +311,43 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     process.nextTick(()=>{
       this.containerSizeUpdates.emit(this.getContainerSize())
     })
+  }
+
+  /** hide until visible */
+
+  public touchedViewport:boolean=this.moduleConfig.waitForViewport === false
+
+  private scrollSubscription:Subscription
+
+  private _initViewportLoading () {
+
+    if ( this.waitForViewport === false || this.moduleConfig.waitForViewport === false ) {
+      this.touchedViewport = true
+      return
+    }
+
+    const cuid = this.node.cuid
+
+    const t0 = performance.now()
+    this.scrollSubscription = this.scrollService.registerComponent(this,[
+        {
+          position: MarginPosition.top
+        }
+      ],this.imageContainer ).map ( p => p.positions[0] )
+    .filter ( pos => {
+      return pos <= this.moduleConfig.viewportMargin
+    } )
+    .take ( 1 )
+    .subscribe( (pos:number) => {
+      const t = performance.now() - t0
+      console.log('%s\timage component scroll margin', cuid, pos )
+    } ).add(()=>{
+      this.touchedViewport = true
+    })
+  }
+
+  private _unsubscribeScroll () {
+    this.scrollSubscription.unsubscribe ()
   }
 
   getContentSize () {
@@ -429,10 +485,12 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected onMounted () {
-    if ( !this.data && this.node )
-    {
-      this.loadNodeContent()
-    }
+    if ( this.node ) {
+      if ( !this.data ) {
+        this.loadNodeContent()
+      }
+      this._initViewportLoading()
+    }   
   }
 
   protected subscribeResizing () {
@@ -447,6 +505,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   ngOnDestroy(){
+    this._unsubscribeScroll()
     this.updateSubscription.unsubscribe()
     super.ngOnDestroy()
   }
