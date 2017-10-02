@@ -16,10 +16,11 @@
 		"doc": "compodoc -p ./tsconfig-doc.json -d ./documentation/",
 		"transpile": "npm run ngModule:build",
 		"ngModule:build": "./scripts/ngModule.sh build",
-		"ngModule:copy": "echo ./scripts/ngModule.sh copy /Users/tEErohr/Documents/kio/angular2/digit/digit-dev/digit-wmr",
+		"ngModule:copy": "./scripts/sync_to.sh ../../digit-wmr",
 		"fetchdeps": "./scripts/sync_kio_module.sh component-routing ctn i18n",
 		"build": "npm run ngModule:build",
-		"build:dev": "npm run fetchdeps && NODE_ENV=production npm run build",
+		"build:dev": "NODE_ENV=production npm run build && npm run ngModule:copy",
+		"build:dev:watch": "./scripts/watch.sh build:dev",
 		"build:release": "NODE_ENV=production npm run build",
 		"build:release:watch": "./scripts/watch.sh build:release"
 	},
