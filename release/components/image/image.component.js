@@ -21,9 +21,12 @@ import { KioContentState } from 'kio-ng2-data';
 import { RoutableComponent, ContentDataComponent, ResizingService } from 'kio-ng2-component-routing';
 import { LocaleService } from 'kio-ng2-i18n';
 import * as urlUtils from 'url';
+import { MarginPosition } from 'kio-ng2-scrolling';
+import { IMAGE_MODULE_CONFIG } from '../../config/IMAGE_MODULE_CONFIG.token';
 var DEBOUNCE_RESIZE = 500;
 var SIZE_BOUNCE = 350;
 var KIO_IMG_URL = 'https://kioget.37x.io/img';
+var LOW_RES_MAX_DPR = 1.5;
 var roundSize = function (size) {
     var width = size.width, height = size.height;
     return {
@@ -43,11 +46,14 @@ var ImageComponent = /** @class */ (function (_super) {
     __extends(ImageComponent, _super);
     function ImageComponent() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.moduleConfig = _this.injector.get(IMAGE_MODULE_CONFIG);
         _this.localeService = _this.injector.get(LocaleService);
         _this.resizingService = _this.injector.get(ResizingService);
+        _this.loading = true;
         /** option to initially render downscaled images   */
         _this.withPreview = false;
         _this.imageScale = 0.2;
+        _this.waitForViewport = true;
         _this.load = new EventEmitter();
         _this.stateChageTimeout = 5000;
         _this._initialized = new EventEmitter();
@@ -69,12 +75,23 @@ var ImageComponent = /** @class */ (function (_super) {
             .map(function (size) {
             return _this.getContentParams(size);
         })
-            .filter(function (contentParams) { return _this.canLoadContentWithParams(contentParams); });
+            .filter(function (contentParams) { return _this.canLoadContentWithParams(contentParams); })
+            .map(function (contentParams) {
+            // console.log('%s::ImageComponent::containerBounds', this.node.cuid, this.getContainerBounds() )
+            // console.log('%s::ImageComponent::contentParams', this.node.cuid, contentParams)
+            // console.log('%s::ImageComponent::sizeMultiplier', this.node.cuid, this.sizeMultiplier)
+            return Object.assign({}, contentParams, {
+                w: contentParams.w * _this.sizeMultiplier,
+                h: contentParams.h * _this.sizeMultiplier
+            });
+        });
         _this.imageURLUpdate = _this.paramUpdate.map(function (params) { return _this.buildContentURL(params); });
         _this.updateSubscription = _this.imageURLUpdate
             .subscribe(function (imageURL) {
             _this.imageUrl = imageURL;
         }, function (error) { return console.error(error); }, function () { return console.log(_this.node.cuid + " - update subscription completed"); });
+        /** hide until visible */
+        _this.touchedViewport = _this.moduleConfig.waitForViewport === false;
         return _this;
     }
     Object.defineProperty(ImageComponent.prototype, "forceHighResolution", {
@@ -90,8 +107,9 @@ var ImageComponent = /** @class */ (function (_super) {
     ImageComponent.prototype.getScale = function () {
         return this.isPreview ? this.imageScale : 1;
     };
-    ImageComponent.prototype.onLoadError = function () {
+    ImageComponent.prototype.onLoadError = function (event) {
         var _this = this;
+        //console.log('image load error', event)
         this.data = null;
         setTimeout(function () { return _this.loadNodeContent(); }, 1000);
     };
@@ -106,8 +124,16 @@ var ImageComponent = /** @class */ (function (_super) {
             this.imageScale = 1;
             this.refreshSize();
         }
+        this.loading = false;
         //console.log('image loaded', event)
     };
+    Object.defineProperty(ImageComponent.prototype, "sizeMultiplier", {
+        get: function () {
+            return this.viewParams.multiplier || 1;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(ImageComponent.prototype, "fixedHeight", {
         get: function () {
             return this.viewParams.fixedHeight === true;
@@ -191,7 +217,20 @@ var ImageComponent = /** @class */ (function (_super) {
         return 1;
     };
     ImageComponent.prototype.getContainerBounds = function () {
-        return this.imageContainer.nativeElement.getBoundingClientRect();
+        /*
+        getBoundingClientRect() is also taking all transforms
+        (e.g. scale, rotate,...) into account, sometimes
+        that's not what we need
+        */
+        if (this.viewParams.useNativeDimensions) {
+            return {
+                width: this.imageContainer.nativeElement.offsetWidth,
+                height: this.imageContainer.nativeElement.offsetHeight
+            };
+        }
+        else {
+            return this.imageContainer.nativeElement.getBoundingClientRect();
+        }
     };
     ImageComponent.prototype.getContainerSize = function () {
         return roundSize(this.getContainerBounds());
@@ -210,6 +249,9 @@ var ImageComponent = /** @class */ (function (_super) {
         }
         if (this.node && this.node.modifiers.indexOf('force-highres') > -1) {
             this.forceHighResolution = true;
+        }
+        if (!this.scrollSubscription) {
+            this._initViewportLoading();
         }
         _super.prototype.onNodeUpdate.call(this);
     };
@@ -234,11 +276,34 @@ var ImageComponent = /** @class */ (function (_super) {
             _this.containerSizeUpdates.emit(_this.getContainerSize());
         });
     };
+    ImageComponent.prototype._initViewportLoading = function () {
+        var _this = this;
+        if (this.waitForViewport === false || this.moduleConfig.waitForViewport === false) {
+            this.touchedViewport = true;
+            return;
+        }
+        var cuid = this.node.cuid;
+        var t0 = performance.now();
+        this.scrollSubscription = this.scrollService.registerComponent(this, [
+            {
+                position: MarginPosition.top
+            }
+        ], this.imageContainer).map(function (p) { return p.positions[0]; })
+            .filter(function (pos) {
+            return pos <= _this.moduleConfig.viewportMargin;
+        })
+            .take(1)
+            .subscribe(function (pos) {
+            _this.touchedViewport = true;
+        });
+    };
+    ImageComponent.prototype._unsubscribeScroll = function () {
+        this.scrollSubscription.unsubscribe();
+    };
     ImageComponent.prototype.getContentSize = function () {
         var containerSize = this.getContainerSize();
         var ratio = this.getRatio();
         var contentSize = {};
-        // console.log('fixedHeight is ', this.fixedHeight)
         if (this.allFixed) {
             contentSize.width = containerSize.width;
             contentSize.height = containerSize.height || (containerSize.width / ratio);
@@ -292,7 +357,7 @@ var ImageComponent = /** @class */ (function (_super) {
         var params = {
             w: preferredSize.width,
             h: preferredSize.height,
-            dpr: this._forceHighRes ? window.devicePixelRatio : 1,
+            dpr: this.getDPR(),
             fit: this.allFixed ? 'crop' : 'clip',
             fm: 'jpg' // default fallback format
         };
@@ -344,8 +409,11 @@ var ImageComponent = /** @class */ (function (_super) {
         }
     };
     ImageComponent.prototype.onMounted = function () {
-        if (!this.data && this.node) {
-            this.loadNodeContent();
+        if (this.node) {
+            if (!this.data) {
+                this.loadNodeContent();
+            }
+            this._initViewportLoading();
         }
     };
     ImageComponent.prototype.subscribeResizing = function () {
@@ -359,6 +427,7 @@ var ImageComponent = /** @class */ (function (_super) {
         _super.prototype.ngOnInit.call(this);
     };
     ImageComponent.prototype.ngOnDestroy = function () {
+        this._unsubscribeScroll();
         this.updateSubscription.unsubscribe();
         _super.prototype.ngOnDestroy.call(this);
     };
@@ -374,10 +443,19 @@ var ImageComponent = /** @class */ (function (_super) {
             });
         }
     };
+    ImageComponent.prototype.getDPR = function () {
+        if (this._forceHighRes) {
+            return window.devicePixelRatio;
+        }
+        else {
+            return Math.min(window.devicePixelRatio, LOW_RES_MAX_DPR);
+        }
+    };
     ImageComponent.propDecorators = {
         'withPreview': [{ type: Input },],
         'imageScale': [{ type: Input, args: ['initialScale',] },],
         'forceHighResolution': [{ type: Input, args: ['forceHighResolution',] },],
+        'waitForViewport': [{ type: Input },],
         'load': [{ type: Output },],
         'imageContainer': [{ type: ViewChild, args: ['imageContainer',] },],
     };

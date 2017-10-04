@@ -2,26 +2,31 @@ import { ElementRef, OnInit, OnDestroy, AfterViewInit, EventEmitter } from '@ang
 import { Observable, Subscription } from 'rxjs';
 import { ContentDataComponent, ResizingService } from 'kio-ng2-component-routing';
 import { LocaleService } from 'kio-ng2-i18n';
+import { KioNg2ImageModuleConfig } from '../../config/interfaces';
 export declare type ISize = {
     width: number;
     height: number;
 };
 export declare class ImageComponent extends ContentDataComponent implements AfterViewInit, OnInit, OnDestroy {
+    protected moduleConfig: KioNg2ImageModuleConfig;
     protected localeService: LocaleService;
     protected resizingService: ResizingService;
     private resizeSubscription;
+    loading: boolean;
     /** option to initially render downscaled images   */
     withPreview: boolean;
     imageScale: number;
     forceHighResolution: boolean;
+    waitForViewport: boolean;
     load: EventEmitter<any>;
     stateChageTimeout: number;
     private _forceHighRes;
     private _initialized;
     getScale(): number;
-    onLoadError(): void;
+    onLoadError(event: any): void;
     onImageLoadStart(event: any): void;
     onImageLoad(event: any): void;
+    readonly sizeMultiplier: number;
     readonly fixedHeight: boolean;
     readonly fixedWidth: boolean;
     readonly cropStrategy: any;
@@ -37,10 +42,7 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     containerSizeUpdates: EventEmitter<ISize>;
     protected _imageSize: any;
     imageSize: any;
-    resizing: Observable<{
-        width: number;
-        height: number;
-    }>;
+    resizing: Observable<ISize>;
     sizeUpdates: Observable<{
         width: number;
         height: number;
@@ -51,6 +53,9 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
         dpr: number;
         fit: string;
         fm: string;
+    } & {
+        w: number;
+        h: number;
     }>;
     imageURLUpdate: Observable<string>;
     updateSubscription: Subscription;
@@ -71,6 +76,11 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     protected onUpdate(): void;
     protected updateStyle(target: string, props: any): void;
     protected updateContainerStyle(props: any): void;
+    /** hide until visible */
+    touchedViewport: boolean;
+    private scrollSubscription;
+    private _initViewportLoading();
+    private _unsubscribeScroll();
     getContentSize(): {
         width: number;
         height: number;
@@ -99,4 +109,5 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     ngOnInit(): void;
     ngOnDestroy(): void;
     ngAfterViewInit(): void;
+    protected getDPR(): number;
 }

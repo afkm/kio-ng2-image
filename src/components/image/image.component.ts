@@ -7,10 +7,16 @@ import { LocaleService } from 'kio-ng2-i18n'
 import { BackendService, DataDirective } from 'kio-ng2-ctn'
 import * as urlUtils from 'url'
 
+import { MarginPosition } from 'kio-ng2-scrolling'
+
+import { IMAGE_MODULE_CONFIG } from '../../config/IMAGE_MODULE_CONFIG.token'
+import { KioNg2ImageModuleConfig } from '../../config/interfaces'
 
 const DEBOUNCE_RESIZE = 500
 const SIZE_BOUNCE = 350
 const KIO_IMG_URL = 'https://kioget.37x.io/img'
+
+const LOW_RES_MAX_DPR = 1.5
 
 
 export type ISize = {
@@ -28,7 +34,7 @@ const roundSize = ( size:any ) => {
 
 const applyScale = ( scale:number ) => ( size:ISize ) => {
   if ( size.width < (10/scale) || size.height < (10/scale) )
-    return size
+  return size
   return {
     width: size.width * scale,
     height: size.height * scale
@@ -47,9 +53,13 @@ const applyScale = ( scale:number ) => ( size:ISize ) => {
 })
 export class ImageComponent extends ContentDataComponent implements AfterViewInit, OnInit, OnDestroy {
 
+  protected moduleConfig:KioNg2ImageModuleConfig=this.injector.get(IMAGE_MODULE_CONFIG)
   protected localeService:LocaleService=this.injector.get(LocaleService)
   protected resizingService:ResizingService=this.injector.get(ResizingService)
   private resizeSubscription:Subscription
+
+
+  loading:boolean = true
 
   /** option to initially render downscaled images   */
   @Input() withPreview:boolean=false
@@ -62,6 +72,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return this._forceHighRes === true
   }
 
+  @Input() waitForViewport:boolean=true
   @Output() load:EventEmitter<any>=new EventEmitter<any>()
 
   stateChageTimeout:number=5000
@@ -73,7 +84,8 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return this.isPreview ? this.imageScale : 1
   }
 
-  onLoadError ():void {
+  onLoadError ( event:any ):void {
+    //console.log('image load error', event)
     this.data = null
     setTimeout(()=>this.loadNodeContent(),1000)
   }
@@ -91,7 +103,13 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
       this.imageScale = 1
       this.refreshSize()
     }
+
+    this.loading = false
     //console.log('image loaded', event)
+  }
+
+  get sizeMultiplier():number {
+    return this.viewParams.multiplier || 1
   }
 
   get fixedHeight():boolean {
@@ -139,35 +157,44 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
 
-  resizing:Observable<{width:number,height:number}>=this.resizingService.resize
+  resizing:Observable<ISize>=this.resizingService.resize
 
   sizeUpdates=this.imageSizeChanges
-    .skipUntil ( this._initialized )
-    .map ( applyScale(this.getScale()) )
-    .map ( roundSize )
-    .distinctUntilChanged(
-      (left,right)=>( left.width === right.width ) && ( left.height === right.height )
-    )
+  .skipUntil ( this._initialized )
+  .map ( applyScale(this.getScale()) )
+  .map ( roundSize )
+  .distinctUntilChanged(
+    (left,right)=>( left.width === right.width ) && ( left.height === right.height )
+  )
 
 
 
   paramUpdate=this.sizeUpdates
-    .map ( size => this.mapSizeToPreferredPreview(size) )
-    .map ( roundSize )
-    .map ( size => {
-      return this.getContentParams(size)
-    } )
-    .filter ( contentParams => this.canLoadContentWithParams(contentParams) )
+  .map ( size => this.mapSizeToPreferredPreview(size) )
+  .map ( roundSize )
+  .map ( size => {
+    return this.getContentParams(size)
+  } )
+  .filter ( contentParams => this.canLoadContentWithParams(contentParams) )
+  .map ( contentParams => {
+    // console.log('%s::ImageComponent::containerBounds', this.node.cuid, this.getContainerBounds() )
+    // console.log('%s::ImageComponent::contentParams', this.node.cuid, contentParams)
+    // console.log('%s::ImageComponent::sizeMultiplier', this.node.cuid, this.sizeMultiplier)
+    return Object.assign({},contentParams,{
+      w: contentParams.w * this.sizeMultiplier,
+      h: contentParams.h * this.sizeMultiplier
+    })
+  } )
 
   imageURLUpdate=this.paramUpdate.map ( params => this.buildContentURL(params) )
 
 
   updateSubscription=this.imageURLUpdate
-    .subscribe ( imageURL => {
-      this.imageUrl = imageURL
-    },
-    error => console.error(error),
-    () => console.log(`${this.node.cuid} - update subscription completed`) )
+  .subscribe ( imageURL => {
+    this.imageUrl = imageURL
+  },
+  error => console.error(error),
+  () => console.log(`${this.node.cuid} - update subscription completed`) )
 
   @ViewChild('imageContainer') imageContainer:ElementRef
 
@@ -207,7 +234,21 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   getContainerBounds(){
-    return this.imageContainer.nativeElement.getBoundingClientRect()
+    /*
+    getBoundingClientRect() is also taking all transforms
+    (e.g. scale, rotate,...) into account, sometimes
+    that's not what we need
+    */
+
+    if (this.viewParams.useNativeDimensions) {
+      return {
+        width: this.imageContainer.nativeElement.offsetWidth,
+        height: this.imageContainer.nativeElement.offsetHeight
+      }
+    }
+    else {
+      return this.imageContainer.nativeElement.getBoundingClientRect()
+    }
   }
 
   getContainerSize () {
@@ -225,17 +266,28 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected onNodeUpdate ( ) {
-    if ( this.node && this.node.headers.color )
-    {
+    
+    if ( this.node && this.node.headers.color ) {
+    
       this.updateContainerStyle({'background-color': this.node.headers.color})
       this._initialized.emit(true)
+
     }
+    
     if ( this.node && this.node.modifiers.indexOf('force-highres') > -1 ) {
+    
       this.forceHighResolution = true
+    
     }
+
+    if ( !this.scrollSubscription ) {
+      this._initViewportLoading ()
+    }
+
+
     super.onNodeUpdate()
   }
-  
+
   protected onUpdate() {
     //super.onUpdate()
     this.imageData = this.data
@@ -261,13 +313,45 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     })
   }
 
+  /** hide until visible */
+
+  public touchedViewport:boolean=this.moduleConfig.waitForViewport === false
+
+  private scrollSubscription:Subscription
+
+  private _initViewportLoading () {
+
+    if ( this.waitForViewport === false || this.moduleConfig.waitForViewport === false ) {
+      this.touchedViewport = true
+      return
+    }
+
+    const cuid = this.node.cuid
+
+    const t0 = performance.now()
+    this.scrollSubscription = this.scrollService.registerComponent(this,[
+        {
+          position: MarginPosition.top
+        }
+      ],this.imageContainer ).map ( p => p.positions[0] )
+    .filter ( pos => {
+      return pos <= this.moduleConfig.viewportMargin
+    } )
+    .take ( 1 )
+    .subscribe( (pos:number) => {
+      this.touchedViewport = true
+    } )
+  }
+
+  private _unsubscribeScroll () {
+    this.scrollSubscription.unsubscribe ()
+  }
+
   getContentSize () {
     const containerSize = this.getContainerSize()
     const ratio : number = this.getRatio()
 
     const contentSize:any = {}
-
-    // console.log('fixedHeight is ', this.fixedHeight)
 
     if ( this.allFixed )
     {
@@ -290,7 +374,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   protected canLoadContentWithParams ( contentParams:any ):boolean {
     const errors = []
     if ( contentParams.w < 10 )
-      errors.push ( `Content parameter property w must be >= 10, but it is ${contentParams.w}` )
+    errors.push ( `Content parameter property w must be >= 10, but it is ${contentParams.w}` )
     if ( contentParams.h < 10 )
       errors.push ( `Content parameter property h must be >= 10, but it is ${contentParams.h}` )
     if ( errors.length > 0 && isDevMode() )
@@ -331,7 +415,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     let params = {
       w: preferredSize.width ,
       h: preferredSize.height ,
-      dpr: this._forceHighRes ? window.devicePixelRatio : 1 ,
+      dpr: this.getDPR() ,
       fit: this.allFixed ? 'crop' : 'clip',
       fm : 'jpg' // default fallback format
     }
@@ -395,12 +479,13 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     }
   }
 
-
   protected onMounted () {
-    if ( !this.data && this.node )
-    {
-      this.loadNodeContent()
-    }
+    if ( this.node ) {
+      if ( !this.data ) {
+        this.loadNodeContent()
+      }
+      this._initViewportLoading()
+    }   
   }
 
   protected subscribeResizing () {
@@ -415,6 +500,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   ngOnDestroy(){
+    this._unsubscribeScroll()
     this.updateSubscription.unsubscribe()
     super.ngOnDestroy()
   }
@@ -433,5 +519,13 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   }
 
+
+  protected getDPR ():number {
+    if ( this._forceHighRes ) {
+      return window.devicePixelRatio
+    } else {
+      return Math.min ( window.devicePixelRatio, LOW_RES_MAX_DPR )
+    }
+  }
 
 }

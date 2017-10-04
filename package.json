@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"description": "",
 	"main": "./src/module",
-	"module": "./src/module.js",
+	"module": "./src/module",
 	"typings": "./release/module.d.ts",
 	"scripts": {
 		"test": "ts-mocha ./src/**/*.spec.ts",
@@ -15,11 +15,13 @@
 		"predoc": "rm -rf ./documentation",
 		"doc": "compodoc -p ./tsconfig-doc.json -d ./documentation/",
 		"transpile": "npm run ngModule:build",
+		"sync:rfn": "./scripts/sync_to.sh ../../digit-rfn",
+		"sync:wmr": "./scripts/sync_to.sh ../../digit-wmr",
 		"ngModule:build": "./scripts/ngModule.sh build",
-		"ngModule:copy": "echo ./scripts/ngModule.sh copy /Users/tEErohr/Documents/kio/angular2/digit/digit-dev/digit-wmr",
 		"fetchdeps": "./scripts/sync_kio_module.sh component-routing ctn i18n",
 		"build": "npm run ngModule:build",
-		"build:dev": "npm run fetchdeps && NODE_ENV=production npm run build",
+		"build:dev": "NODE_ENV=production npm run build && npm run sync:rfn && npm run sync:wmr",
+		"build:dev:watch": "./scripts/watch.sh build:dev",
 		"build:release": "NODE_ENV=production npm run build",
 		"build:release:watch": "./scripts/watch.sh build:release"
 	},
@@ -76,6 +78,7 @@
 	"dependencies": {
 		"@ngx-translate/core": "^6.0.1",
 		"@ngx-translate/http-loader": "0.0.3",
-		"kio-ng2-i18n": "github:afkm/kio-ng2-i18n"
+		"kio-ng2-i18n": "github:afkm/kio-ng2-i18n",
+		"kio-ng2-navigation": "github:afkm/kio-ng2-navigation#v0.0.2"
 	}
 }
