@@ -85,7 +85,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   onLoadError ( event:any ):void {
-    console.log('image load error', event)
+    //console.log('image load error', event)
     this.data = null
     setTimeout(()=>this.loadNodeContent(),1000)
   }
@@ -157,7 +157,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
 
-  resizing=this.resizingService.resize
+  resizing:Observable<ISize>=this.resizingService.resize
 
   sizeUpdates=this.imageSizeChanges
   .skipUntil ( this._initialized )
@@ -339,11 +339,8 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     } )
     .take ( 1 )
     .subscribe( (pos:number) => {
-      const t = performance.now() - t0
-      console.log('%s\timage component scroll margin', cuid, pos )
-    } ).add(()=>{
       this.touchedViewport = true
-    })
+    } )
   }
 
   private _unsubscribeScroll () {
@@ -355,8 +352,6 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     const ratio : number = this.getRatio()
 
     const contentSize:any = {}
-
-    // console.log('fixedHeight is ', this.fixedHeight)
 
     if ( this.allFixed )
     {

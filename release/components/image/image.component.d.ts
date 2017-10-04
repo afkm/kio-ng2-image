@@ -12,6 +12,7 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     protected localeService: LocaleService;
     protected resizingService: ResizingService;
     private resizeSubscription;
+    loading: boolean;
     /** option to initially render downscaled images   */
     withPreview: boolean;
     imageScale: number;
@@ -25,6 +26,7 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     onLoadError(event: any): void;
     onImageLoadStart(event: any): void;
     onImageLoad(event: any): void;
+    readonly sizeMultiplier: number;
     readonly fixedHeight: boolean;
     readonly fixedWidth: boolean;
     readonly cropStrategy: any;
@@ -40,10 +42,7 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     containerSizeUpdates: EventEmitter<ISize>;
     protected _imageSize: any;
     imageSize: any;
-    resizing: Observable<{
-        width: number;
-        height: number;
-    }>;
+    resizing: Observable<ISize>;
     sizeUpdates: Observable<{
         width: number;
         height: number;
@@ -54,6 +53,9 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
         dpr: number;
         fit: string;
         fm: string;
+    } & {
+        w: number;
+        h: number;
     }>;
     imageURLUpdate: Observable<string>;
     updateSubscription: Subscription;
@@ -107,4 +109,5 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     ngOnInit(): void;
     ngOnDestroy(): void;
     ngAfterViewInit(): void;
+    protected getDPR(): number;
 }
