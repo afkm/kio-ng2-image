@@ -1,0 +1,30 @@
+%default-sans-serif {
+  font-family: 'FreightSans W03 Book', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+}
+
+%default-sans-serif-bold,
+%default-sans-serif-black {
+  font-family: 'Freight Sans W03 Black', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+}
+
+%default-sans-serif-italic {
+    font-family:'Freight Sans W03 Book Italic', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+}
+
+%default-serif {
+  font-family: 'Freight Display W03 Boo1197407', serif;
+  font-weight: normal;
+  font-style: normal; // faux non-italic
+}
+
+%default-serif-italic {
+  font-family: 'Freight Display W03 Boo1197407', serif;
+  font-weight: normal;
+  font-style: normal;
+}

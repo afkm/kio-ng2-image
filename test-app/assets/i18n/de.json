@@ -1,0 +1,57 @@
+{
+  "Städelmuseum" : "Städelmuseum",
+  "Copyrights" : "Copyright © 2017 Städelmuseum. All rights reserverd",
+  "Digitorial for the exhibition" : "Digitorial zur Ausstellung",
+  "Bonnard / Matisse" : "Reformation",
+  "Privacy Policy" : "Datenschutzerklärung",
+  "Privacy Policy URL" : "http://www.staedelmuseum.de/de/datenschutz",
+  "Imprint" : "Impressum",
+  "Imprint URL" : "http://www.staedelmuseum.de/de/impressum-digitorial-afkm",
+  "Credits" : "Literatur-, Bild- und Künstler­rechte­nachweise",
+  "Continue with": "Weiter mit",
+  "Network with" : "Mit dem Städel vernetzen:",
+  "Share this digitorial" : "Digitorial teilen",
+  "About the exhibition" : "Rund um die Ausstellung",
+  "To top" : "Nach oben",
+
+  "href_facebook" : "https://www.facebook.com/staedelmuseum",
+  "href_twitter" : "https://twitter.com/staedelmuseum",
+  "href_youtube" : "https://www.youtube.com/user/staedelmuseum",
+  "href_instagram" : "https://www.instagram.com/staedelmuseum/",
+  "href_googleplus" : "https://plus.google.com/104640651245729551978/posts",
+
+  "meta_url" : "",
+  "meta_title" : "",
+  "meta_description" : "",
+
+  "opengraph_url" : "",
+  "opengraph_title" : "",
+  "opengraph_image" : "",
+  "opengraph_description" : "",
+
+  "sharing_url" : "",
+  "sharing_text_twitter" : "",
+  "sharing_subject_email" : "",
+  "sharing_text_email" : "",
+  "sharing_text_whatsapp" : "",
+  "sharing_text_pinterst" : "",
+
+  "boot_brand" : "Städel Museum",
+  "boot_title" : "Reformation",
+  "boot_subtitle" : "",
+  "boot_browser_not_supported" : "Dieses Digitorial erfordert eine aktuelle Browserversion und aktiviertes JavaScript. Bitte führen Sie ein Browser‑Update durch oder aktivieren Sie JavaScript, um das Angebot zu nutzen.",
+  "boot_loading_digitorial" : "Lade Digitorial",
+
+  "Chapter 1": "Titel Kapitel 1",
+  "Chapter 2": "Titel Kapitel 2",
+  "Chapter 3": "Titel Kapitel 3",
+  "Chapter 4": "Titel Kapitel 4",
+  "Chapter 5": "Titel Kapitel 5",
+
+  "Newsletter form headline": "Keine Neuigkeiten mehr verpassen!",
+  "Newsletter email placeholder": "Ihre E-Mail-Addresse",
+  "Newsletter submit button": "Jetzt abonnieren!",
+  "Newsletter sent message": "Vielen Dank!",
+  "Newsletter invalid email message": "Bitte verwenden Sie eine korrekte Email-Addresse."
+
+}

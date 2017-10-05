@@ -1,0 +1,38 @@
+// names
+
+$white: #ffffff;
+$black: #000000;
+$gray: #878787;
+$red : red;
+
+$purple: #810081; // kamapgne lila
+$gold: #C3A030; // kampagne gold
+$bleublue: #71A3CC; // kampagne bleu
+$darkslategrey: #303132; // antrazit hell
+$darkslateblack: #1B1B1B; // antrazit dark
+$gainsboro: #E0DACE; // background
+
+
+// definitions
+
+$color-campaign-default: $purple;
+$color-campaign-contrast: $gold;
+$color-campaign-contrast-b: $bleublue;
+$color-secondary: $gold;
+
+$color-background-default: $gainsboro;
+$color-background-dark: $darkslateblack;
+$color-background-dark-light: $darkslategrey;
+$color-background-bright: $white;
+$color-background-boot: $color-campaign-default;
+
+$color-marked-default: $color-campaign-contrast;
+
+// typo
+
+$color-font-dark: $black;
+$color-font-bright: $white;
+$color-placeholder: $gray;
+$color-link: $color-font-dark;
+$color-warning: $red;
+$color-font-campaign: $color-campaign-default;

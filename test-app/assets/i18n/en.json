@@ -1,0 +1,56 @@
+{
+  "Städelmuseum" : "Städelmuseum",
+  "Copyrights" : "Copyright © 2017 Städelmuseum. All rights reserverd",
+  "Digitorial for the exhibition" : "Digitorial for the exhibition",
+  "Bonnard / Matisse" : "Reformation",
+  "Privacy Policy" : "Privacy Policy",
+  "Privacy Policy URL" : "http://www.staedelmuseum.de/en/privacy-policy",
+  "Imprint" : "Imprint",
+  "Imprint URL" : "http://www.staedelmuseum.de/en/imprint-digitorial-afkm",
+  "Credits" : "Bibliography, photo credits and artists’ rights",
+  "Continue with": "Continue with",
+  "Network with" : "Network with the Städel:",
+  "Share this digitorial" : "Share this Digitorial",
+  "About the exhibition" : "About the exhibition",
+  "To top" : "To top",
+
+  "href_facebook" : "https://www.facebook.com/staedelmuseum",
+  "href_twitter" : "https://twitter.com/staedelmuseum",
+  "href_youtube" : "https://www.youtube.com/user/staedelmuseum",
+  "href_instagram" : "https://www.instagram.com/staedelmuseum/",
+  "href_googleplus" : "https://plus.google.com/104640651245729551978/posts",
+
+  "meta_url" : "",
+  "meta_title" : "",
+  "meta_description" : "",
+
+  "opengraph_url" : "",
+  "opengraph_title" : "",
+  "opengraph_image" : "",
+  "opengraph_description" : "",
+
+  "sharing_url" : "",
+  "sharing_text_twitter" : "",
+  "sharing_subject_email" : "",
+  "sharing_text_email" : "",
+  "sharing_text_whatsapp" : "",
+  "sharing_text_pinterst" : "",
+
+  "boot_brand" : "Städelmuseum",
+  "boot_title" : "Reformation",
+  "boot_subtitle" : "",
+  "boot_browser_not_supported" : "This digitorial requires a modern browser and javascript. To use this website, please run a browser update or activate javascript.",
+  "boot_loading_digitorial" : "Loading digitorial",
+
+  "Chapter 1": "Title chapter 1",
+  "Chapter 2": "Title chapter 2",
+  "Chapter 3": "Title chapter 3",
+  "Chapter 4": "Title chapter 4",
+  "Chapter 5": "Title chapter 5",
+
+  "Newsletter form headline": "Don’t miss out on news!",
+  "Newsletter email placeholder": "Your Email address",
+  "Newsletter submit button": "Sign up for news",
+  "Newsletter sent message": "Thank you!",
+  "Newsletter invalid email message": "Please provide a valid email address."
+}

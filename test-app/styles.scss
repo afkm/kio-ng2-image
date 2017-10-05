@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+* {
+	box-sizing: border-box;
+}
+
+app-component-builder {
+	@extend %clearfix;
+}
+
+
+.afkm-debug {
+  display: none;
+}
+
+
+@import 'scss/globals';
+
+@import 'scss/boot';
