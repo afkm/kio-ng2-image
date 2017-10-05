@@ -1,0 +1,14 @@
+// @uses maps $colors-back, $colors-middle, $colors-front in _colors.scss
+
+
+// triggerclass is the name of the modifier/class applied to the components
+
+// main is either bonnard, matisse, bonnard-light or matisse-light,...
+
+@mixin color-components($triggerclass, $c) {
+
+}
+
+@mixin color-chapters($color-main, $color-sub) {
+
+}

@@ -3,3 +3,11 @@
 *.ngfactory.ts
 
 documentation
+
+/build
+
+/test-app
+
+/scripts
+
+/e2e

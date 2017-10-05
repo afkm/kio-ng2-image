@@ -1,0 +1,97 @@
+
+%common-labeled-image {
+    position: relative;
+    z-index: 5;
+
+    .inner {
+        position: relative;
+
+        * {
+            color: $color-font-bright;
+        }
+    }
+
+    &.is-not-stripped {
+        background: $color-background-default;
+
+        @extend %default-border;
+
+        @media #{$medium-up} {
+            background: $color-background-dark-light;
+        }
+
+        .outer {
+            @extend %g-rowcol;
+        }
+
+        .inner {
+            margin: 0 auto;
+            padding-bottom: rem-calc(30);
+
+            background: $color-font-dark;
+
+            @media #{$small-only} {
+                margin-right: $column-gutter*-1;
+                margin-left: $column-gutter*-1;
+            }
+
+            @media #{$medium-up} {
+                width: column-calc(8.5);
+                margin-left: column-calc(2.5);
+                padding: rem-calc(60);
+            }
+        }
+
+        &.portrait {
+
+            .inner {
+                @media #{$medium-up} {
+                    width: column-calc(6.5);
+                    margin-left: column-calc(3.5);
+                }
+            }
+        }
+    }
+
+
+    .images-container {
+        position: relative;
+        z-index: 5;
+    }
+
+    figcaption {
+        position: relative;
+
+        padding: $row-gutter 0;
+    }
+
+    &.is-not-stripped figcaption {
+        padding-right: $column-gutter;
+        padding-left: $column-gutter;
+    }
+}
+
+
+%common-labeled-image-action {
+    position: absolute;
+    bottom: rem-calc(-25);
+    left: 50%;
+
+    margin-left: rem-calc(-25);
+
+    transition: transform 0.2s ease-out 0s;
+
+    line-height: 0;
+
+    &.is-revealed,
+    &.is-zoomed {
+        transform: rotateY(180deg);
+    }
+
+
+    @media #{$medium-up} {
+        bottom: rem-calc(-35);
+
+        margin-left: rem-calc(-35);
+    }
+}

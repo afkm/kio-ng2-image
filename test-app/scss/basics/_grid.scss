@@ -1,0 +1,44 @@
+%g-row {
+  max-width: $container-width;
+  margin: 0 auto;
+  padding-right: $column-gutter / 2;
+  padding-left: $column-gutter / 2;
+
+  @extend %clearfix;
+}
+
+%g-rowcol {
+    padding-right: $column-gutter;
+    padding-left: $column-gutter;
+
+    @extend %g-row;
+}
+
+%g-row-reset {
+  max-width: none;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+%g-col {
+  float: left;
+
+  padding-right: $column-gutter / 2;
+  padding-left: $column-gutter / 2;
+}
+%g-col-end {
+  float: right;
+
+  padding-right: $column-gutter / 2;
+  padding-left: $column-gutter / 2;
+}
+
+
+%g-col-reset {
+  float: none;
+
+  width: auto;
+  margin-left: 0;
+  padding-right: 0;
+  padding-left: 0;
+}

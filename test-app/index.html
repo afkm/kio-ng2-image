@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ meta_title }}</title>
+    <base href="/">
+
+    <meta name="fragment" content="!">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+
+    <meta name="description" content="{{ meta_description }}"/>
+
+    <meta property="og:url" content="{{ opengraph_url }}"/>
+    <meta property="og:type" content="{{ opengraph_type }}" />
+    <meta property="og:title" content="{{ opengraph_title }}"/>
+    <meta property="og:image" content="{{ opengraph_image }}"/>
+    <meta property="og:description" content="{{ opengraph_description }}"/>
+
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="{{ opengraph_title }}"/>
+    <meta name="twitter:description" content="{{ opengraph_description }}"/>
+    <meta name="twitter:image" content="{{ opengraph_image }}"/>
+
+    <link type="text/css" rel="stylesheet" href="https://fast.fonts.net/cssapi/39574256-01d6-4283-8819-5cd1e4fe1baa.css"/>
+
+    <script type="text/javascript">
+    <!--
+    // https://gist.github.com/davidhund/b995353fdf9ce387b8a2#gistcomment-1487468
+    var guard = function(d){
+        var compatible = false
+        var c = " ", f = "flex", fw = "-webkit-"+f , e = d.createElement('b');
+        try {
+            e.style.display = fw;
+            e.style.display = f;
+            compatible = true
+        } catch(e) {
+            c += "no-"+f;
+        }
+        if ( compatible === false )
+        {
+            var b = document.body
+            var appRoot = b.querySelector('app-root')
+            var boot = appRoot.children[0]
+            b.appendChild(boot)
+            appRoot.remove()
+        }
+        return compatible
+    }
+    -->
+    </script>
+
+</head>
+<body>
+    <app-root>
+
+        <div class="boot">
+
+            <div class="inner">
+
+                <h1 class="brand">{{ boot_brand }}</h1>
+
+                <section class="title">
+                    <h1>{{ boot_title }}</h1>
+                    <h2>{{ boot_subtitle }}</h2>
+                </section>
+
+                <p>
+                    <span class="nojs">{{ boot_browser_not_supported }}</span>
+                    <span class="loading hidden">{{ boot_loading_digitorial }}</span>
+                </p>
+
+            </div>
+        </div>
+
+        <script type="text/javascript">
+        <!--
+        window.BROWSER_INCOMPATIBLE = guard(document) === false;
+        if ( !window.BROWSER_INCOMPATIBLE )
+        {
+            var nojs = document.body.querySelector('.nojs')
+            nojs.parentElement.removeChild(nojs);
+            document.body.querySelector('.loading').classList.remove('hidden');
+        }
+        -->
+        </script>
+
+    </app-root>
+</body>
+</html>

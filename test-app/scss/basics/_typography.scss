@@ -1,0 +1,253 @@
+@import '../utils';
+
+
+/* =====================
+Typography
+===================== */
+//
+
+
+body {
+    color: $color-font-dark;
+
+    line-height: $global-line-height;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @extend %default-sans-serif;
+    font-variant-numeric: lining-nums;
+    -moz-font-feature-settings: "lnum";
+    -webkit-font-feature-settings: "lnum";
+    font-feature-settings: "lnum";
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 $row-gutter*2;
+
+    font-weight: normal;
+
+    @extend %default-sans-serif-bold;
+}
+
+
+h1, h2, h3, h4, h5, h6,
+p, li, address, blockquote, dl,
+figcaption {
+    margin: 0 0 $row-gutter;
+
+    font-size: rem-calc(22);
+    font-weight: normal;
+
+    > b,
+    > strong {
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    em, i {
+        @extend %default-sans-serif-italic;
+    }
+}
+
+p, li, address, blockquote, dl,
+figcaption {
+
+    > b,
+    > strong,
+    > a > b,
+    > a > strong {
+        @extend %default-sans-serif-bold;
+    }
+}
+
+ul,
+ol {
+    li {
+        margin-bottom: rem-calc(5);
+    }
+}
+
+dl {
+    dt, dd {
+        display: inline-block;
+
+        margin: 0;
+    }
+    dt {
+        @extend %default-sans-serif-bold;
+    }
+
+    dd {
+        display: inline;
+        &:after {
+            content:"\a";
+            white-space: pre;
+        }
+    }
+}
+
+b, strong {
+    font-weight: normal;
+}
+
+em, i {
+    font-style: normal;
+}
+
+a {
+    text-decoration: none;
+
+    color: $color-font-dark;
+
+    p &,
+    li & {
+        text-decoration: underline;
+
+        &:hover,
+        &:focus {
+            opacity: 0.75;
+        }
+    }
+}
+
+blockquote{
+
+    > p {
+        font-size: rem-calc(26);
+        line-height: (34/26);
+
+        @extend %default-sans-serif-black;
+
+        @media #{$medium-up} {
+            font-size: rem-calc(32);
+        }
+        &:before {
+            margin-right: -0.2em;
+
+            // content: "„";
+            // .lang-en & {
+            //     content: "“"
+            // }
+        }
+        &:after {
+            margin-left: -0.2em;
+
+            // content: "“";
+            // .lang-en & {
+            //     content: "”";
+            // }
+        }
+    }
+
+    cite,
+    cite p {
+        display: block;
+
+        text-align: right;
+        text-transform: uppercase;
+
+        font-size: rem-calc(18);
+
+        @extend %default-serif-italic;
+    }
+
+    cite p {
+        margin: 0;
+        padding: 0;
+    }
+
+    cite.has-meta {
+        cursor: pointer;
+
+        &:before {
+            margin-top: rem-calc(4);
+
+            border-color: $color-font-dark !important;
+
+            @extend %credits-info;
+        }
+
+        .meta {
+            padding-top: rem-calc(10);
+
+            * {
+                text-transform: none;
+            }
+
+            &:not([hidden]) {
+                display: block;
+            }
+        }
+    }
+}
+
+address{
+    font-style: normal;
+}
+
+img {
+    display: block;
+
+    width: 100%;
+    height: auto;
+    margin: 0;
+}
+
+figure{
+    margin: 0;
+}
+
+figcaption {
+    display: block;
+
+    margin: 0;
+    padding: rem-calc(2) 0;
+
+    * {
+        margin: 0;
+
+        text-transform: uppercase;
+
+        font-size: rem-calc(14);
+
+        @extend %default-serif-italic;
+
+        @media #{$medium-up} {
+            font-size: rem-calc(18);
+        }
+    }
+
+    &.has-meta {
+        cursor: pointer;
+
+        &:before {
+            @extend %credits-info;
+        }
+
+        .meta {
+            padding-top: rem-calc(10);
+
+            * {
+                text-transform: none;
+            }
+
+            &:not([hidden]) {
+                display: block;
+            }
+        }
+    }
+}
+
+
+hr{
+    margin: $row-gutter*2 0;
+
+    border: none;
+    border-top: 1px solid $color-font-dark;
+}
+
+iframe{
+    width: 100%;
+
+    border: none;
+}
