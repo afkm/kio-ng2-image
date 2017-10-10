@@ -42,7 +42,7 @@ var applyScale = function (scale) { return function (size) {
         height: size.height * scale
     };
 }; };
-var ImageComponent = /** @class */ (function (_super) {
+var ImageComponent = (function (_super) {
     __extends(ImageComponent, _super);
     function ImageComponent() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -451,27 +451,26 @@ var ImageComponent = /** @class */ (function (_super) {
             return Math.min(window.devicePixelRatio, LOW_RES_MAX_DPR);
         }
     };
-    ImageComponent.propDecorators = {
-        'withPreview': [{ type: Input },],
-        'imageScale': [{ type: Input, args: ['initialScale',] },],
-        'forceHighResolution': [{ type: Input, args: ['forceHighResolution',] },],
-        'waitForViewport': [{ type: Input },],
-        'load': [{ type: Output },],
-        'imageContainer': [{ type: ViewChild, args: ['imageContainer',] },],
-    };
-    ImageComponent = __decorate([
-        RoutableComponent({
-            selector: 'publication-image',
-            templateUrl: './image.component.html',
-            styleUrls: ['./image.component.scss'],
-            encapsulation: ViewEncapsulation.None,
-            queryable: {
-                type: 'src',
-                modifiers: ['image']
-            }
-        })
-    ], ImageComponent);
     return ImageComponent;
 }(ContentDataComponent));
+ImageComponent.propDecorators = {
+    'withPreview': [{ type: Input },],
+    'imageScale': [{ type: Input, args: ['initialScale',] },],
+    'forceHighResolution': [{ type: Input, args: ['forceHighResolution',] },],
+    'waitForViewport': [{ type: Input },],
+    'load': [{ type: Output },],
+    'imageContainer': [{ type: ViewChild, args: ['imageContainer',] },],
+};
+ImageComponent = __decorate([
+    RoutableComponent({
+        selector: 'publication-image',
+        templateUrl: './image.component.html',
+        styleUrls: ['./image.component.scss'],
+        encapsulation: ViewEncapsulation.None,
+        queryable: {
+            type: 'src',
+            modifiers: ['image']
+        }
+    })
+], ImageComponent);
 export { ImageComponent };
-//# sourceMappingURL=image.component.js.map
