@@ -10,12 +10,16 @@
     "sourceMap": true,
     "target": "es5",
     "typeRoots": [
-        "../node_modules/@types"
+        "./node_modules/@types"
      ]
   },
+  "includes": [
+    "src/**/*.ts"
+  ],
   "exclude": [
-    "node_modules",
-    "release",
-    "aot"
+    "../node_modules",
+    "../release",
+    "../test-app",
+    "../aot"
   ]
 }
