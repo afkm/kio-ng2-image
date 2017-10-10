@@ -39,6 +39,7 @@ export class KioNg2ImageModule {
         {
           provide: IMAGE_MODULE_CONFIG,
           useValue: {
+            activitySpinner: config.activitySpinner,
             waitForViewport: 'waitForViewport' in config ? config.waitForViewport : true,
             viewportMargin: 'viewportMargin' in config ? config.viewportMargin : 1.2
           }
