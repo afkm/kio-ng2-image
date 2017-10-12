@@ -1,4 +1,4 @@
-<div class="image-container" [attr.data-cuid]="node?.cuid" [ngClass]="{'all-fixed': allFixed, 'loading': hasPlaceholder, 'portrait': (imageOrientation==='portrait'),'landscape': (imageOrientation==='landscape')}" [ngStyle]="containerStyle" #imageContainer>
+<div class="image-container" [attr.data-cuid]="node?.cuid" [ngClass]="{'all-fixed': allFixed, 'loading': hasPlaceholder, 'portrait': (imageOrientation==='portrait'),'landscape': (imageOrientation==='landscape'), 'loading': isLoading}" [ngStyle]="containerStyle" #imageContainer>
   <ctn-image *ngIf="!!imageUrl === touchedViewport === true" [ngStyle]="imgStyle" (error)="onLoadError($event)" (load)="onImageLoad($event)" (loadStart)="onImageLoadStart($event)" [src]="imageUrl"></ctn-image>
 
   <div class="spinner" *ngIf="moduleConfig.activitySpinner" [inlineSVG]="moduleConfig.activitySpinner"></div>

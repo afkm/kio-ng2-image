@@ -68,6 +68,8 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     this._forceHighRes = highRes === true
   }
 
+  public isLoading:boolean=true
+
   get forceHighResolution ():boolean {
     return this._forceHighRes === true
   }
@@ -86,15 +88,18 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   onLoadError ( event:any ):void {
     //console.log('image load error', event)
+    this.isLoading = false
     this.data = null
     setTimeout(()=>this.loadNodeContent(),1000)
   }
 
   onImageLoadStart(event:any):void{
+    this.isLoading = true
     this.updateContentState ( KioContentState.loading )
   }
 
   onImageLoad(event:any):void{
+    this.isLoading = false
     this.updateContentState ( KioContentState.loaded )
     this.load.emit()
     if ( this.isPreview )
