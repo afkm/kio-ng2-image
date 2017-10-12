@@ -2,9 +2,9 @@
 	"name": "kio-ng2-image",
 	"version": "0.0.4",
 	"description": "",
-	"main": "./src/module",
-	"module": "./src/module",
-	"typings": "./release/module.d.ts",
+	"main": "./src/module.ts",
+	"module": "./src/module.ts",
+	"typings": "./src/module.ts",
 	"scripts": {
 		"start": "ng serve",
 		"test": "ng test",
