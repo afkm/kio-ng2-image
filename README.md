@@ -14,7 +14,8 @@ import { KioNg2ImageModule } from 'kio-ng2-image'
     KioNg2ImageModule.forRoot ( {
       viewportMargin: 0.8,
       waitForViewport: true,
-      activitySpinner: '/assets/images/spinner.svg'
+      activitySpinner: '/assets/images/spinner.svg',
+      lowResolutionMaxDPR: 1.5
     } )
     ...
   ], ...
@@ -47,3 +48,7 @@ Hide images until they touch the viewport on the margin specified in `viewportMa
 
 Hide images until they touch the viewport on the margin specified in `viewportMargin`
 
+
+### lowResolutionMaxDPR `number`
+
+Maximum DPR to use for reducing image load size
