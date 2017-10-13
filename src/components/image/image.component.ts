@@ -529,7 +529,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     if ( this._forceHighRes ) {
       return window.devicePixelRatio
     } else {
-      return Math.min ( window.devicePixelRatio, LOW_RES_MAX_DPR )
+      return Math.min ( window.devicePixelRatio, this.moduleConfig.lowResolutionMaxDPR || LOW_RES_MAX_DPR )
     }
   }
 

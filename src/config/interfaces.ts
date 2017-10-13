@@ -18,5 +18,11 @@ export interface KioNg2ImageModuleConfig {
   viewportMargin?: number
 
 
+  /**
+   * maxmimum dpr to load images to reduce data
+   * @default 1.5
+   */
+  lowResolutionMaxDPR?: number
+
 
 }
