@@ -17,6 +17,7 @@ export declare class ImageComponent extends ContentDataComponent implements Afte
     withPreview: boolean;
     imageScale: number;
     forceHighResolution: boolean;
+    isLoading: boolean;
     waitForViewport: boolean;
     load: EventEmitter<any>;
     stateChageTimeout: number;

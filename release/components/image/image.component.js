@@ -53,6 +53,7 @@ var ImageComponent = (function (_super) {
         /** option to initially render downscaled images   */
         _this.withPreview = false;
         _this.imageScale = 0.2;
+        _this.isLoading = true;
         _this.waitForViewport = true;
         _this.load = new EventEmitter();
         _this.stateChageTimeout = 5000;
@@ -110,13 +111,16 @@ var ImageComponent = (function (_super) {
     ImageComponent.prototype.onLoadError = function (event) {
         var _this = this;
         //console.log('image load error', event)
+        this.isLoading = false;
         this.data = null;
         setTimeout(function () { return _this.loadNodeContent(); }, 1000);
     };
     ImageComponent.prototype.onImageLoadStart = function (event) {
+        this.isLoading = true;
         this.updateContentState(KioContentState.loading);
     };
     ImageComponent.prototype.onImageLoad = function (event) {
+        this.isLoading = false;
         this.updateContentState(KioContentState.loaded);
         this.load.emit();
         if (this.isPreview) {
