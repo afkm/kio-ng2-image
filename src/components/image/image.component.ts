@@ -349,7 +349,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   private _unsubscribeScroll () {
-    this.scrollSubscription.unsubscribe ()
+    this.scrollSubscription && this.scrollSubscription.unsubscribe ()
   }
 
   getContentSize () {
