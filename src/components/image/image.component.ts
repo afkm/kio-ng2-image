@@ -377,6 +377,13 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected canLoadContentWithParams ( contentParams:any ):boolean {
+    
+    if ( !this.node ) {
+
+      return false
+      
+    }
+
     const errors = []
     if ( contentParams.w < 10 )
     errors.push ( `Content parameter property w must be >= 10, but it is ${contentParams.w}` )
