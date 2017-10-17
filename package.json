@@ -1,6 +1,6 @@
 {
 	"name": "kio-ng2-image",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"description": "",
 	"main": "./src/module.ts",
 	"module": "./src/module.ts",
