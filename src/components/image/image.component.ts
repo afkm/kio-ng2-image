@@ -1,5 +1,5 @@
 //import '../../../../debug'
-import { isDevMode, Component, Input, ViewChild, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, OnChanges, SimpleChanges, SimpleChange, ViewEncapsulation, Output, EventEmitter } from '@angular/core'
+import { isDevMode, Component, Input, Output, ViewChild, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, OnChanges, SimpleChanges, SimpleChange, ViewEncapsulation, EventEmitter } from '@angular/core'
 import { Observable, Subscription, AsyncSubject, Observer, Scheduler } from 'rxjs'
 import { KioContent, KioSrcData, KioContentState } from 'kio-ng2-data'
 import { RoutableComponent, ContentDataComponent, ContentLoaderDirective, ResizingService } from 'kio-ng2-component-routing'
@@ -74,7 +74,9 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return this._forceHighRes === true
   }
 
+  @Input() debug:boolean=false
   @Input() waitForViewport:boolean=true
+  @Output() url:EventEmitter<string>=new EventEmitter<string>()
   @Output() load:EventEmitter<any>=new EventEmitter<any>()
 
   stateChageTimeout:number=5000
@@ -89,7 +91,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   onLoadError ( event:any ):void {
     //console.log('image load error', event)
     this.isLoading = false
-    this.data = null
+    this.data = undefined
     setTimeout(()=>this.loadNodeContent(),1000)
   }
 
@@ -144,7 +146,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   isPreview:boolean=this.withPreview
 
-  imageUrl:string
+  imageURL:string=''
 
   imageData:any;
   imgStyle:any={}
@@ -196,7 +198,8 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   updateSubscription=this.imageURLUpdate
   .subscribe ( imageURL => {
-    this.imageUrl = imageURL
+    this.imageURL = imageURL
+    this.url.emit(imageURL)
   },
   error => console.error(error),
   () => console.log(`${this.node.cuid} - update subscription completed`) )
@@ -296,7 +299,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   protected onUpdate() {
     //super.onUpdate()
     this.imageData = this.data
-    this.imageUrl = this.data ? this.data.url : undefined
+    this.imageURL = this.data ? this.data.url : undefined
     this.refreshSize()
 
     if ( this.isPreview )
@@ -377,6 +380,11 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected canLoadContentWithParams ( contentParams:any ):boolean {
+    
+    if ( !this.node ) {
+      return false
+    }
+
     const errors = []
     if ( contentParams.w < 10 )
     errors.push ( `Content parameter property w must be >= 10, but it is ${contentParams.w}` )
@@ -466,9 +474,9 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   buildContentURL (contentParams:any={}):string {
-    const imageUrl = urlUtils.parse(`${KIO_IMG_URL}/${this.node.cuid}/${this.localeService.currentLocale}`)
-    imageUrl.query = contentParams
-    return urlUtils.format(imageUrl)
+    const imageURL = urlUtils.parse(`${KIO_IMG_URL}/${this.node.cuid}/${this.localeService.currentLocale}`)
+    imageURL.query = contentParams
+    return urlUtils.format(imageURL)
   }
 
   loadContent():Observable<any> {

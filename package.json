@@ -18,6 +18,7 @@
 		"doc": "compodoc -p ./tsconfig-doc.json -d ./documentation/",
 		"transpile": "npm run ngModule:build",
 		"sync:rfn": "./scripts/sync_to.sh ../../digit-rfn",
+		"sync:rfn:watch": "./scripts/watch.sh sync:rfn",
 		"sync:wmr": "./scripts/sync_to.sh ../../digit-wmr",
 		"ngModule:build": "./scripts/ngModule.sh build",
 		"fetchdeps": "./scripts/sync_kio_module.sh component-routing ctn i18n",
