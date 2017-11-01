@@ -1,0 +1,1 @@
+export type FormatParameterType = 'gif'|'jp2'|'jpg'|'json'|'jxr'|'mp4'|'pjpg'|'png'|'png8'|'png32'|'webp'

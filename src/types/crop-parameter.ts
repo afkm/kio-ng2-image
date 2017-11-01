@@ -1,0 +1,1 @@
+export type CropParameterType = 'crop'|'top'|'bottom'|'left'|'right'|'faces'|'focalpoint'|'edges'|'entropy'

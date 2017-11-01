@@ -2,6 +2,7 @@ import { NgModule, ModuleWithProviders } from '@angular/core'
 import { KioNg2ComponentRoutingModule } from 'kio-ng2-component-routing'
 import { KioCtnModule } from 'kio-ng2-ctn'
 import { ImageComponent } from './components/image/image.component'
+import { CanvasImageComponent } from './components/canvas-image/canvas-image.component'
 import { KioNg2i18nModule } from 'kio-ng2-i18n'
 import { KioNg2ScrollingModule } from 'kio-ng2-scrolling'
 import { InlineSVGModule, InlineSVGDirective } from 'ng-inline-svg'
@@ -10,12 +11,19 @@ import { InlineSVGModule, InlineSVGDirective } from 'ng-inline-svg'
 import { KioNg2ImageModuleConfig } from './config/interfaces'
 import { IMAGE_MODULE_CONFIG } from './config/IMAGE_MODULE_CONFIG.token'
 export { IMAGE_MODULE_CONFIG } from './config/IMAGE_MODULE_CONFIG.token'
+import { ImageURLResolver } from './url-resolver/url-resolver'
+export { ImageURLResolver } from './url-resolver/url-resolver'
+
+import { ImageURLOptionsResolver } from './url-resolver/options-resolver'
+export { ImageURLOptionsResolver } from './url-resolver/options-resolver'
 
 
+
+export let ImageComponents = [ ImageComponent, CanvasImageComponent ]
 
 @NgModule({
   imports: [ KioNg2ComponentRoutingModule, KioNg2ScrollingModule, KioCtnModule, KioNg2i18nModule, InlineSVGModule ],
-  declarations: [ ImageComponent ],
+  declarations: [ ...ImageComponents ],
   providers: [
     {
       provide: IMAGE_MODULE_CONFIG,
@@ -24,10 +32,12 @@ export { IMAGE_MODULE_CONFIG } from './config/IMAGE_MODULE_CONFIG.token'
         viewportMargin: 1.2
       }
     },
-    InlineSVGDirective
+    InlineSVGDirective,
+    ImageURLResolver,
+    ImageURLOptionsResolver
   ],
-  entryComponents: [ ImageComponent ],
-  exports: [ KioNg2ComponentRoutingModule, KioNg2ScrollingModule, ImageComponent, KioCtnModule, KioNg2i18nModule ]
+  entryComponents: [ ...ImageComponents ],
+  exports: [ KioNg2ComponentRoutingModule, KioNg2ScrollingModule, ...ImageComponents, KioCtnModule, KioNg2i18nModule ]
 })
 export class KioNg2ImageModule {
 

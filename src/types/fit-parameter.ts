@@ -1,0 +1,1 @@
+export type FitParameterType = 'clamp'|'clip'|'crop'|'facearea'|'fill'|'fillmax'|'max'|'min'|'scale'
