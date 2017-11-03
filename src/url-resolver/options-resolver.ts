@@ -11,25 +11,31 @@ export class ImageURLOptionsResolver {
 
   resolve ( container:ElementRef, options:(ImageOptions&KioNode) ):ImageURLOptions {
 
+    console.log('options',options)
+
+    const {
+      width, height
+    } = container.nativeElement.getBoundingClientRect()
+
     const size = {
-      width: container.nativeElement.clientWidth,
-      height: container.nativeElement.clientHeight
+      width,
+      height
     }
 
     if ( options.fixedWidth !== true ) {
 
-      size.width = size.height * options.ratio
+      size.height = size.width / options.ratio
 
     }else if ( options.fixedHeight !== true ) {
 
-      size.height = size.width / options.ratio
+      size.width = size.height * options.ratio
 
     }
 
     const urlOptions:ImageURLOptions = {
-      url: `https://kioget.37x.io/src/${options.cuid}/${options.locale||'de_DE'}`,
-      w: size.width,
-      h: size.height
+      url: `https://kioget.37x.io/img/${options.cuid}/${options.locale||'de_DE'}`,
+      w: Math.floor(size.width),
+      h: Math.floor(size.height)
     }
 
     if ( options.fixedWidth && options.fixedHeight ) {
