@@ -9,7 +9,7 @@ import { KioNode } from 'kio-ng2-data'
 @Injectable()
 export class ImageURLOptionsResolver {
 
-  resolve ( container:ElementRef, options:(ImageOptions&KioNode) ):ImageURLOptions {
+  resolve ( container:ElementRef, options:ImageOptions, node:KioNode ):ImageURLOptions {
 
     console.log('options',options)
 
@@ -24,16 +24,16 @@ export class ImageURLOptionsResolver {
 
     if ( options.fixedWidth !== true ) {
 
-      size.height = size.width / options.ratio
+      size.height = size.width / node.headers.ratio
 
     }else if ( options.fixedHeight !== true ) {
 
-      size.width = size.height * options.ratio
+      size.width = size.height * node.headers.ratio
 
     }
 
     const urlOptions:ImageURLOptions = {
-      url: `https://kioget.37x.io/img/${options.cuid}/${options.locale||'de_DE'}`,
+      url: `https://kioget.37x.io/img/${node.cuid}/${node.locale||'de_DE'}`,
       w: Math.floor(size.width),
       h: Math.floor(size.height)
     }

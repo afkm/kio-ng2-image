@@ -14,6 +14,9 @@ export { IMAGE_MODULE_CONFIG } from './config/IMAGE_MODULE_CONFIG.token'
 import { ImageURLResolver } from './url-resolver/url-resolver'
 export { ImageURLResolver } from './url-resolver/url-resolver'
 
+import { SizeResolver } from './resolvers/size-resolver'
+export { SizeResolver } from './resolvers/size-resolver'
+
 import { ImageURLOptionsResolver } from './url-resolver/options-resolver'
 export { ImageURLOptionsResolver } from './url-resolver/options-resolver'
 
@@ -34,7 +37,8 @@ export let ImageComponents = [ ImageComponent, CanvasImageComponent ]
     },
     InlineSVGDirective,
     ImageURLResolver,
-    ImageURLOptionsResolver
+    ImageURLOptionsResolver,
+    SizeResolver
   ],
   entryComponents: [ ...ImageComponents ],
   exports: [ KioNg2ComponentRoutingModule, KioNg2ScrollingModule, ...ImageComponents, KioCtnModule, KioNg2i18nModule ]

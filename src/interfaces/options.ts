@@ -4,7 +4,6 @@ import { ColorspaceParameterType } from '../types/colorspace-parameter'
 import { FitParameterType } from '../types/fit-parameter'
 import { FormatParameterType } from '../types/format-parameter'
 
-
 export interface ImageOptions {
 
   /**
@@ -16,8 +15,6 @@ export interface ImageOptions {
    * if set to true, the DOMElement`s height is used 
    */
   fixedHeight?:boolean
-
-  ratio:number
 
   fit?: FitParameterType
 

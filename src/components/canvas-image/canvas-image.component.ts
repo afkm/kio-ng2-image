@@ -18,8 +18,11 @@ import { BackendService } from 'kio-ng2-ctn'
 import { KioNode } from 'kio-ng2-data'
 import { ImageURLResolver } from '../../url-resolver/url-resolver'
 import { ImageURLOptionsResolver } from '../../url-resolver/options-resolver'
+import { SizeResolver } from '../../resolvers/size-resolver'
 
 import { ImageWrapper } from '../../classes/image-wrapper.class'
+import { ImageHeaders } from '../../interfaces/headers'
+
 
 
 @Component({
@@ -34,6 +37,7 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
   constructor(
       protected backendService:BackendService,
       protected imageURLResolver:ImageURLResolver,
+      protected sizeResolver:SizeResolver,
       protected imageURLOptionsResolver:ImageURLOptionsResolver,
       protected wrappedElement:ElementRef
     ) {
@@ -50,33 +54,36 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
   @ViewChildren('canvas')
   canvasElement:QueryList<ElementRef>
 
-  @Input('viewParams') set viewParamsInput( options:ImageOptions ) {
-    console.log('input viewParams', options)
-    this.viewParamsEmitter.emit(options)
-  }
+  @Input('viewParams') viewParamsInput:ImageOptions 
 
   get viewParams():Observable<ImageOptions> {
-    return this.viewParamsEmitter.asObservable().startWith({})
+    return this.viewParamsEmitter.asObservable()
   }
 
   @Input() set node ( nodeValue:KioNode ) {
+    console.log('update node', nodeValue)
     this.nodeEmitter.emit(nodeValue)
   }
 
+  /** async emitters */
+
   protected nodeEmitter:EventEmitter<KioNode>=new EventEmitter()
+
+  protected nodeOutput:Observable<KioNode>=this.nodeEmitter.asObservable().shareReplay()
   
   protected viewParamsEmitter:EventEmitter<ImageOptions>=new EventEmitter()
+  
+  protected viewParamsOutput:Observable<ImageOptions>=this.viewParamsEmitter.shareReplay()
 
   protected canvasElementEmitter:EventEmitter<HTMLCanvasElement>=new EventEmitter()
 
-  protected elementSize:Observable<Size>=Observable.interval().map ( k => {
-    const el = this.wrappedElement.nativeElement
-    const { width, height } = el.getBoundingClientRect()
-    console.log('size', {width, height})
-    return {
-      width: Math.floor(width),
-      height: Math.floor(height)
-    }
+
+  /** observables */
+
+  protected imageHeaders:Observable<ImageHeaders>=this.nodeOutput.map ( (node:KioNode):ImageHeaders => <any>node.headers )
+
+  protected elementSize:Observable<Size>=this.nodeOutput.withLatestFrom(this.viewParamsOutput).mergeMap ( ([node,options]:[KioNode,ImageOptions]) => {
+    return this.sizeResolver.resolve(this.wrappedElement,options,<ImageHeaders>node.headers)
   } )
   .distinctUntilChanged ( (sizeLeft:Size, sizeRight:Size) => {
     return (sizeLeft.width === sizeRight.width) && (sizeLeft.height === sizeRight.height)
@@ -93,12 +100,7 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
       this.viewParams
     ).map ( ([size,node,viewParams]:[Size,KioNode,ImageOptions]) => {
 
-    return this.imageURLOptionsResolver.resolve ( this.wrappedElement, {
-      cuid: node.cuid,
-      locale: node.locale,
-      ratio: node.headers.ratio || 1,
-      ...viewParams
-    } )
+    return this.imageURLOptionsResolver.resolve ( this.wrappedElement, viewParams, node )
   }) 
 
   
