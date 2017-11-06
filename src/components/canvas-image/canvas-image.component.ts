@@ -54,26 +54,24 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
   @ViewChildren('canvas')
   canvasElement:QueryList<ElementRef>
 
-  @Input('viewParams') viewParamsInput:ImageOptions 
-
-  get viewParams():Observable<ImageOptions> {
-    return this.viewParamsEmitter.asObservable()
-  }
-
   @Input() set node ( nodeValue:KioNode ) {
     console.log('update node', nodeValue)
     this.nodeEmitter.emit(nodeValue)
   }
 
+  @Input('viewParams') set viewParamsInput ( viewParams:ImageOptions ) {
+    this.viewParamsEmitter.emit(viewParams)
+  } 
+
   /** async emitters */
 
   protected nodeEmitter:EventEmitter<KioNode>=new EventEmitter()
 
-  protected nodeOutput:Observable<KioNode>=this.nodeEmitter.asObservable().shareReplay()
+  protected nodeOutput:Observable<KioNode>=this.nodeEmitter.shareReplay(1)
   
   protected viewParamsEmitter:EventEmitter<ImageOptions>=new EventEmitter()
   
-  protected viewParamsOutput:Observable<ImageOptions>=this.viewParamsEmitter.shareReplay()
+  protected viewParamsOutput:Observable<ImageOptions>=this.viewParamsEmitter.shareReplay(1)
 
   protected canvasElementEmitter:EventEmitter<HTMLCanvasElement>=new EventEmitter()
 
@@ -82,7 +80,7 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
 
   protected imageHeaders:Observable<ImageHeaders>=this.nodeOutput.map ( (node:KioNode):ImageHeaders => <any>node.headers )
 
-  protected elementSize:Observable<Size>=this.nodeOutput.withLatestFrom(this.viewParamsOutput).mergeMap ( ([node,options]:[KioNode,ImageOptions]) => {
+  protected elementSize:Observable<Size>=Observable.zip(this.nodeOutput,this.viewParamsOutput).mergeMap ( ([node,options]:[KioNode,ImageOptions]) => {
     return this.sizeResolver.resolve(this.wrappedElement,options,<ImageHeaders>node.headers)
   } )
   .distinctUntilChanged ( (sizeLeft:Size, sizeRight:Size) => {
@@ -90,17 +88,13 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
   } )
   .filter ( (size:Size) => {
     return size.width >= 10 && size.height >= 10
-  } )
-  .first()
+  } ).shareReplay(1)
 
   protected imageURLOptions:EventEmitter<ImageURLOptions>=new EventEmitter()
 
-  urlOptions:Observable<ImageURLOptions>=this.elementSize.withLatestFrom(
-      this.nodeEmitter,
-      this.viewParams
-    ).map ( ([size,node,viewParams]:[Size,KioNode,ImageOptions]) => {
-
-    return this.imageURLOptionsResolver.resolve ( this.wrappedElement, viewParams, node )
+  urlOptions:Observable<ImageURLOptions>=Observable.zip(this.elementSize,this.nodeEmitter,this.viewParamsOutput)
+  .map ( ([size,node,viewParams]:[Size,KioNode,ImageOptions]) => {
+    return this.imageURLOptionsResolver.resolve ( size, viewParams, node )
   }) 
 
   
@@ -122,6 +116,7 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
   //imageSource=this.image
 
   private _imageURLSourceSub=this.imageURLSource.delay(10).subscribe ( url => {
+    console.log('image url', url)
     this.image.url = url
     this.imageURL = url
   } )
@@ -140,6 +135,14 @@ export class CanvasImageComponent implements OnInit, AfterViewInit {
     this.canvasElementEmitter.emit(this.canvasElement.first.nativeElement)
     this.canvasElement.changes.subscribe ( change => {
       console.log('canvas element changed', change )
+    } )
+
+    this.nodeOutput.subscribe ( node => {
+      console.log('node sub 0', node)
+    } )
+
+    this.nodeOutput.subscribe ( node => {
+      console.log('node sub 1', node)
     } )
 
   }

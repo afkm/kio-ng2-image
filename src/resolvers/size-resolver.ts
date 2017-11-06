@@ -14,9 +14,15 @@ export class SizeResolver {
 
   resolve ( containerElement:ElementRef, options:ImageOptions, headers:ImageHeaders ):Observable<SizeOptions> {
         
-    const clientBounds = containerElement.nativeElement.getBoundingClientRect()
+    const clientBounds = containerElement.nativeElement.parentElement.getBoundingClientRect()
+    console.log('bounds of ', containerElement.nativeElement.parentElement, clientBounds)
 
-    const sizeOptions:SizeOptions = {
+    let size:Size = {
+      width: clientBounds.width,
+      height: clientBounds.height
+    }
+
+    let sizeOptions:SizeOptions = {
 
       left: 0,
       top: 0,
@@ -27,23 +33,33 @@ export class SizeResolver {
 
       scale: window.devicePixelRatio || 1,
 
-      width: clientBounds.width,
-      height: clientBounds.height
+      ...size
     }
 
     if ( options.fixedWidth ) {
-      return Observable.of({
-        ...sizeOptions,
-        ...this.applyHorizontalConstraint(containerElement,options,headers)
-      })
+      size = this.applyHorizontalConstraint(containerElement,options,headers)      
     } else if ( options.fixedHeight ) {
-      return Observable.of({
-        ...sizeOptions,
-        ...this.applyVerticalConstraint(containerElement,options,headers)
-      })
+      size = this.applyVerticalConstraint(containerElement,options,headers)
     }
 
-    return Observable.of(sizeOptions)
+    this.applyElementStyles(containerElement.nativeElement, options, size)
+
+    return Observable.of({...sizeOptions, ...size})
+  }
+
+  public applyElementStyles ( element:HTMLElement, options:ImageOptions, size:Size ) {
+
+    if ( options.fixedHeight && options.fixedWidth ) {
+
+      element.style.setProperty('position','absolute')
+
+    }
+
+    console.log('apply size to ', element, size )
+
+    element.style.setProperty('width', `${size.width}px`)
+    element.style.setProperty('height', `${size.height}px`)
+
   }
 
   public applyHorizontalConstraint ( containerElement:ElementRef, options:ImageOptions, headers:ImageHeaders ) {
@@ -54,16 +70,11 @@ export class SizeResolver {
 
     const {
       width
-    } = containerElement.nativeElement.getBoundingClientRect()
-
-    const height:number = Math.floor(width / ratio)
-
-    const el:HTMLElement = containerElement.nativeElement
-    el.style.setProperty('height',`${height}px`)
+    } = containerElement.nativeElement.parentElement.getBoundingClientRect()
 
     return {
       width,
-      height
+      height: Math.floor(width / ratio)
     }
 
   }
@@ -77,15 +88,10 @@ export class SizeResolver {
 
     const {
       height
-    } = containerElement.nativeElement.getBoundingClientRect()
-
-    const width:number = Math.floor(height * ratio)
-
-    const el:HTMLElement = containerElement.nativeElement
-    el.style.setProperty('width',`${width}px`)
+    } = containerElement.nativeElement.parentElement.getBoundingClientRect()
 
     return {
-      width,
+      width: Math.floor(height * ratio),
       height
     }
 
