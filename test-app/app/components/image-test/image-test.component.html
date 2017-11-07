@@ -1,10 +1,10 @@
 <div class="fixed-width">
-  <kio-image-canvas [node]="testNode" [viewParams]="{'fixedWidth': true, 'dpr': 3}"></kio-image-canvas>
+  <publication-image [node]="testNode" [viewParams]="{'fixedWidth': true, 'dpr': 3}"></publication-image>
 </div>
 <div class="fixed-height">
-  <kio-image-canvas [node]="testNode" [viewParams]="{'fixedHeight': true, 'dpr': 3}"></kio-image-canvas>
+  <publication-image [node]="testNode" [viewParams]="{'fixedHeight': true, 'dpr': 3}"></publication-image>
 </div>
 
 <div class="fixed-height fixed-width">
-  <kio-image-canvas [node]="testNode" [viewParams]="{'fixedHeight': true,'fixedWidth': true, 'fit': 'clip', 'dpr': 3}"></kio-image-canvas>
+  <publication-image [node]="testNode" [viewParams]="{'fixedHeight': true,'fixedWidth': true, 'fit': 'crop', 'dpr': 3}"></publication-image>
 </div>

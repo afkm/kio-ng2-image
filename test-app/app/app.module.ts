@@ -4,13 +4,15 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 
 import { KioNg2ImageModule } from '../../src/module';
-import { ImageTestComponent } from './components/image-test/image-test.component'
+import { ImageTestComponent } from './components/image-test/image-test.component';
+import { EditableImageTestComponent } from './components/editable-image-test/editable-image-test.component'
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ImageTestComponent
+    ImageTestComponent,
+    EditableImageTestComponent
   ],
   imports: [
     BrowserModule,

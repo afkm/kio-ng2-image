@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable'
 
-import { Injectable, ElementRef } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { Size } from '../interfaces/size'
 import { ImageOptions } from '../interfaces/options'
 import { ImageHeaders } from '../interfaces/headers'
@@ -11,12 +11,35 @@ import { FitParameterType } from '../types/fit-parameter'
 @Injectable()
 export class SizeResolver {
 
+  elementSize ( element:HTMLElement, options:ImageOptions ):Size {
 
-  resolve ( containerElement:ElementRef, options:ImageOptions, headers:ImageHeaders ):Observable<SizeOptions> {
+    if ( options.useNativeDimensions ) {
+    
+      return {
+        width: element.offsetWidth,
+        height: element.offsetHeight
+      }
+    
+    } else {
+      
+      const {
+        width,
+        height
+      } = element.getBoundingClientRect()
+      
+      return {
+        width,
+        height
+      }
+    
+    }
+
+  }
+
+  resolve ( containerElement:HTMLElement, options:ImageOptions, headers:ImageHeaders ):Observable<SizeOptions> {
         
-    const clientBounds = containerElement.nativeElement.parentElement.getBoundingClientRect()
-    console.log('bounds of ', containerElement.nativeElement.parentElement, clientBounds)
-
+    const clientBounds = this.elementSize(containerElement,options)
+    
     let size:Size = {
       width: clientBounds.width,
       height: clientBounds.height
@@ -35,34 +58,29 @@ export class SizeResolver {
 
       ...size
     }
-
-    if ( options.fixedWidth ) {
+    
+    if ( options.fixedWidth && options.fixedHeight ) {
+      containerElement.style.setProperty('position','absolute')
+    } else if ( options.fixedWidth ) {
       size = this.applyHorizontalConstraint(containerElement,options,headers)      
     } else if ( options.fixedHeight ) {
       size = this.applyVerticalConstraint(containerElement,options,headers)
     }
 
-    this.applyElementStyles(containerElement.nativeElement, options, size)
+    //this.applyElementStyles(containerElement, options, size)
+
+    containerElement.classList.add('initialized')
 
     return Observable.of({...sizeOptions, ...size})
   }
 
   public applyElementStyles ( element:HTMLElement, options:ImageOptions, size:Size ) {
 
-    if ( options.fixedHeight && options.fixedWidth ) {
-
-      element.style.setProperty('position','absolute')
-
-    }
-
-    console.log('apply size to ', element, size )
-
     element.style.setProperty('width', `${size.width}px`)
     element.style.setProperty('height', `${size.height}px`)
-
   }
 
-  public applyHorizontalConstraint ( containerElement:ElementRef, options:ImageOptions, headers:ImageHeaders ) {
+  public applyHorizontalConstraint ( containerElement:HTMLElement, options:ImageOptions, headers:ImageHeaders ) {
 
     const {
       ratio=1
@@ -70,7 +88,7 @@ export class SizeResolver {
 
     const {
       width
-    } = containerElement.nativeElement.parentElement.getBoundingClientRect()
+    } = this.elementSize(containerElement,options)
 
     return {
       width,
@@ -80,7 +98,7 @@ export class SizeResolver {
   }
 
 
-  public applyVerticalConstraint ( containerElement:ElementRef, options:ImageOptions, headers:ImageHeaders ) {
+  public applyVerticalConstraint ( containerElement:HTMLElement, options:ImageOptions, headers:ImageHeaders ) {
 
     const {
       ratio=1
@@ -88,7 +106,7 @@ export class SizeResolver {
 
     const {
       height
-    } = containerElement.nativeElement.parentElement.getBoundingClientRect()
+    } = this.elementSize(containerElement,options)
 
     return {
       width: Math.floor(height * ratio),

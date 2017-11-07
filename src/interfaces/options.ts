@@ -26,4 +26,6 @@ export interface ImageOptions {
 
   waitForViewport?: boolean
 
+  useNativeDimensions?: boolean
+
 }

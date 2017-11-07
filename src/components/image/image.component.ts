@@ -42,7 +42,7 @@ const applyScale = ( scale:number ) => ( size:ISize ) => {
 }
 
 @RoutableComponent({
-  selector: 'publication-image',
+  selector: 'publication-image-old',
   templateUrl: './image.component.html',
   styleUrls: ['./image.component.scss'],
   encapsulation: ViewEncapsulation.None,
