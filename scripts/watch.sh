@@ -10,7 +10,7 @@ NPM_COMMAND=${1:-build}
 
 function main() {
   cd "${PROJECT_ROOT}"
-  "$NODEMON_BIN" -w ./src -e ts --exec "npm run ${NPM_COMMAND}"
+  "$NODEMON_BIN" -w ./src -e ts -e scss -e html --exec "npm run ${NPM_COMMAND}"
 }
 
 main
