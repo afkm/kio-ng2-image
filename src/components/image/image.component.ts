@@ -58,11 +58,11 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   protected resizingService:ResizingService=this.injector.get(ResizingService)
   private resizeSubscription:Subscription
 
-
+  
   loading:boolean = true
 
   /** option to initially render downscaled images   */
-  @Input() withPreview:boolean=false
+  @Input() withPreview:boolean
   @Input('initialScale') imageScale:number=0.2
   @Input('forceHighResolution') set forceHighResolution(highRes:boolean) {
     this._forceHighRes = highRes === true
@@ -102,11 +102,15 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     this.isLoading = false
     this.updateContentState ( KioContentState.loaded )
     this.load.emit()
-    if ( this.isPreview )
-    {
-      this.isPreview = false
-      this.imageScale = 1
-      this.refreshSize()
+    
+    if ( this.withPreview !== false ) {
+      if ( this.imageScale < 1 ) {
+        this.imageScale = 1 
+        this.refreshSize()
+      }
+      else {
+        this.isPreview = false
+      }
     }
 
     this.loading = false
@@ -142,7 +146,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
 
-  isPreview:boolean=this.withPreview
+  isPreview:boolean
 
   imageUrl:string
 
@@ -158,7 +162,14 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   set imageSize ( size:any ) {
     size = roundSize ( size )
-    this.imageSizeChanges.emit(size)
+    //console.log('set size to ', size )
+    if ( !this.imageContainer.nativeElement.isConnected ) {
+      if ( isDevMode() ) {
+        console.warn(`Tried to resize image ${this.node.cuid} while element is not connected.`)
+      }
+    } else {
+      this.imageSizeChanges.emit(size)
+    }
   }
 
 
@@ -166,13 +177,16 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   sizeUpdates=this.imageSizeChanges
   .skipUntil ( this._initialized )
-  .map ( applyScale(this.getScale()) )
+  .map ( size => {
+    return applyScale(this.getScale())(size)
+  } )
   .map ( roundSize )
+  .filter ( size => size.width > 0 && size.height > 0 )
   .distinctUntilChanged(
-    (left,right)=>( left.width === right.width ) && ( left.height === right.height )
+    (left,right) => {
+      return left.width > 0 && left.height > 0 && ( left.width === right.width ) && ( left.height === right.height )
+    }
   )
-
-
 
   paramUpdate=this.sizeUpdates
   .map ( size => this.mapSizeToPreferredPreview(size) )
@@ -196,6 +210,11 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   updateSubscription=this.imageURLUpdate
   .subscribe ( imageURL => {
+    if ( this.isPreview ) {
+      this.imageContainer.nativeElement.classList.add('preview')
+    } else {
+      this.imageContainer.nativeElement.classList.remove('preview')
+    }
     this.imageUrl = imageURL
   },
   error => console.error(error),
@@ -244,16 +263,25 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     (e.g. scale, rotate,...) into account, sometimes
     that's not what we need
     */
+   
+   let size:ISize
+
+   const scale:number = this.imageScale
 
     if (this.viewParams.useNativeDimensions) {
-      return {
+      size = {
         width: this.imageContainer.nativeElement.offsetWidth,
         height: this.imageContainer.nativeElement.offsetHeight
       }
     }
     else {
-      return this.imageContainer.nativeElement.getBoundingClientRect()
+      size = this.imageContainer.nativeElement.getBoundingClientRect()
     }
+
+    /*console.log('%s - container bounds - w: %s h: %s', this.node.cuid, size.width, size.height )
+    console.log('scale: ', scale)*/
+
+    return size
   }
 
   getContainerSize () {
@@ -302,6 +330,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     if ( this.isPreview )
     {
       this.isPreview = false
+      this.logDebug ( 'did load preview for %s', this.node.cuid )
       //this.loadNodeContent()
     }
   }
@@ -396,7 +425,8 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return errors.length === 0
   }
 
-  mapSizeToPreferredPreview ( contentSize:{width:number,height:number} ) {
+  bounceSize ( contentSize:ISize ) {
+
     if ( this.viewParams.bouncing === false ) {
       return contentSize
     }
@@ -421,6 +451,25 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
       }
     }
     return contentSize
+
+  }
+
+  mapSizeToPreferredPreview ( contentSize:ISize ) {
+    let size:ISize = this.bounceSize(contentSize)
+
+    if ( this.isPreview ) {
+
+      size = {
+        width: size.width * this.getScale(),
+        height: size.height * this.getScale()
+      }
+
+      this.logDebug ( 'preview size', size )
+
+    } 
+
+    return size
+
   }
 
   getContentParams(preferredSize?:ISize){
@@ -507,6 +556,12 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   ngOnInit(){
+    this.isPreview = this.withPreview !== false
+    this.logDebug ('component "%s" init with viewParams', this, this.viewParams, {
+      isPreview: this.isPreview,
+      scale: this.getScale(),
+      ratio: this.getRatio()
+    })
     this._initialized.emit(true)
     super.ngOnInit()
   }
@@ -518,6 +573,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   ngAfterViewInit(){
+    //this.logDebug ('view of "%s" init with viewParams', this, this.viewParams)
     //console.log('ngAfterInit with viewParams', this.viewParams, '\n', this)
     this.subscribeResizing()
     super.ngAfterViewInit()
@@ -531,6 +587,13 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   }
 
+  private logDebug ( format:string, ...args:any[] ) {
+    if ( isDevMode() ) {
+      console.group('Image:Debug')
+      console.log(format,...args)
+      console.groupEnd()
+    }
+  }
 
   protected getDPR ():number {
     if ( this._forceHighRes ) {

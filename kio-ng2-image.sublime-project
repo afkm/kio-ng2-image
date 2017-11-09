@@ -8,21 +8,6 @@
 				"node_modules"
 			],
 			"path": "."
-		},
-		{
-			"path": "node_modules/kio-ng2-component-routing"
-		},
-		{
-			"path": "node_modules/kio-ng2-ctn"
-		},
-		{
-			"path": "node_modules/kio-ng2-data"
-		},
-		{
-			"path": "node_modules/kio-ng2-i18n"
-		},
-		{
-			"path": "node_modules/kio-ng2-scrolling"
 		}
 	]
 }
