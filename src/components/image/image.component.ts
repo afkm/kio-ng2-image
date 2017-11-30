@@ -164,7 +164,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     size = roundSize ( size )
     //console.log('set size to ', size )
     if ( !this.imageContainer.nativeElement.isConnected ) {
-      if ( isDevMode() ) {
+      if ( isDevMode() && this.moduleConfig.debugging === true ) {
         console.warn(`Tried to resize image ${this.node.cuid} while element is not connected.`)
       }
     } else {
@@ -588,7 +588,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   private logDebug ( format:string, ...args:any[] ) {
-    if ( isDevMode() ) {
+    if ( isDevMode() && this.moduleConfig.debugging === true ) {
       console.group('Image:Debug')
       console.log(format,...args)
       console.groupEnd()
