@@ -1,6 +1,6 @@
 {
   "name": "kio-ng2-image",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Provides image container for usage in digitorials.  This module handles mapping of KioNode to image URL according to view dimensions.",
   "main": "./src/module.ts",
   "module": "./src/module.ts",
