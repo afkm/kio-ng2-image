@@ -42,7 +42,8 @@ export class KioNg2ImageModule {
             activitySpinner: config.activitySpinner,
             waitForViewport: 'waitForViewport' in config ? config.waitForViewport : true,
             viewportMargin: 'viewportMargin' in config ? config.viewportMargin : 1.2,
-            lowResolutionMaxDPR: 'lowResolutionMaxDPR' in config ? config.lowResolutionMaxDPR : 1.2
+            lowResolutionMaxDPR: 'lowResolutionMaxDPR' in config ? config.lowResolutionMaxDPR : 1.2,
+            debugging: 'debugging' in config ? config.debugging : false
           }
         }
       ]

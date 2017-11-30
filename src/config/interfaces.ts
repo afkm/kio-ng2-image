@@ -25,4 +25,11 @@ export interface KioNg2ImageModuleConfig {
   lowResolutionMaxDPR?: number
 
 
+  /**
+   * enabled console output in development mode
+   * @default false
+   */
+  debugging?: boolean
+
+
 }
