@@ -33,8 +33,6 @@ const roundSize = ( size:any ) => {
 }
 
 const applyScale = ( scale:number ) => ( size:ISize ) => {
-  if ( size.width < (10/scale) || size.height < (10/scale) )
-  return size
   return {
     width: size.width * scale,
     height: size.height * scale
@@ -63,7 +61,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   /** option to initially render downscaled images   */
   @Input() withPreview:boolean
-  @Input('initialScale') imageScale:number=0.2
+  @Input('initialScale') imageScale:number=0.1
   @Input('forceHighResolution') set forceHighResolution(highRes:boolean) {
     this._forceHighRes = highRes === true
   }
@@ -104,7 +102,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     this.load.emit()
     
     if ( this.withPreview !== false ) {
-      if ( this.imageScale < 1 ) {
+      if ( this.getScale() < 1 ) {
         this.imageScale = 1 
         this.refreshSize()
       }
@@ -162,7 +160,6 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   set imageSize ( size:any ) {
     size = roundSize ( size )
-    //console.log('set size to ', size )
     if ( !this.imageContainer.nativeElement.isConnected ) {
       if ( isDevMode() && this.moduleConfig.debugging === true ) {
         console.warn(`Tried to resize image ${this.node.cuid} while element is not connected.`)
@@ -266,7 +263,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
    
    let size:ISize
 
-   const scale:number = this.imageScale
+   const scale:number = this.getScale()
 
     if (this.viewParams.useNativeDimensions) {
       size = {
@@ -284,6 +281,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return size
   }
 
+  /** returns rounded size of container element */
   getContainerSize () {
     return roundSize ( this.getContainerBounds() )
   }
@@ -353,6 +351,9 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   private scrollSubscription:Subscription
 
+  /** 
+   * delays loading of images until they're within a threshold to the viewport 
+   */
   private _initViewportLoading () {
 
     if ( this.waitForViewport === false || this.moduleConfig.waitForViewport === false ) {
@@ -381,6 +382,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     this.scrollSubscription && this.scrollSubscription.unsubscribe ()
   }
 
+  /** reads container element size and computes best fit size according to view param constraints ( fixedHeight, fixedWidth ) */
   getContentSize () {
     const containerSize = this.getContainerSize()
     const ratio : number = this.getRatio()
@@ -405,6 +407,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return roundSize ( contentSize )
   }
 
+  /** validates content parameters */
   protected canLoadContentWithParams ( contentParams:any ):boolean {
     
     if ( !this.node ) {
@@ -425,6 +428,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     return errors.length === 0
   }
 
+  /** transform size to reduce api requests */
   bounceSize ( contentSize:ISize ) {
 
     if ( this.viewParams.bouncing === false ) {
@@ -454,17 +458,22 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   }
 
+
   mapSizeToPreferredPreview ( contentSize:ISize ) {
     let size:ISize = this.bounceSize(contentSize)
 
     if ( this.isPreview ) {
 
-      size = {
+      const previewSize = {
         width: size.width * this.getScale(),
         height: size.height * this.getScale()
       }
 
-      this.logDebug ( 'preview size', size )
+      this.logDebug ( 'preview size', previewSize )
+
+      if ( ( previewSize.width > 10 ) && ( previewSize.height > 10) ) {
+        return previewSize
+      }
 
     } 
 
