@@ -56,7 +56,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   protected resizingService:ResizingService=this.injector.get(ResizingService)
   private resizeSubscription:Subscription
 
-  
+
   loading:boolean = true
 
   /** option to initially render downscaled images   */
@@ -100,10 +100,10 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     this.isLoading = false
     this.updateContentState ( KioContentState.loaded )
     this.load.emit()
-    
+
     if ( this.withPreview !== false ) {
       if ( this.getScale() < 1 ) {
-        this.imageScale = 1 
+        this.imageScale = 1
         this.refreshSize()
       }
       else {
@@ -137,6 +137,10 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   get fitStrategy():any {
     return this.viewParams.fitStrategy || false
+  }
+
+  get focalPoint():any {
+    return this.viewParams.focalPoint || false
   }
 
   get hasPlaceholder():boolean {
@@ -260,7 +264,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     (e.g. scale, rotate,...) into account, sometimes
     that's not what we need
     */
-   
+
    let size:ISize
 
    const scale:number = this.getScale()
@@ -297,18 +301,18 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   }
 
   protected onNodeUpdate ( ) {
-    
+
     if ( this.node && this.node.headers.color ) {
-    
+
       this.updateContainerStyle({'background-color': this.node.headers.color})
       this._initialized.emit(true)
 
     }
-    
+
     if ( this.node && this.node.modifiers.indexOf('force-highres') > -1 ) {
-    
+
       this.forceHighResolution = true
-    
+
     }
 
     if ( !this.scrollSubscription ) {
@@ -351,8 +355,8 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   private scrollSubscription:Subscription
 
-  /** 
-   * delays loading of images until they're within a threshold to the viewport 
+  /**
+   * delays loading of images until they're within a threshold to the viewport
    */
   private _initViewportLoading () {
 
@@ -409,11 +413,11 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   /** validates content parameters */
   protected canLoadContentWithParams ( contentParams:any ):boolean {
-    
+
     if ( !this.node ) {
 
       return false
-      
+
     }
 
     const errors = []
@@ -475,7 +479,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
         return previewSize
       }
 
-    } 
+    }
 
     return size
 
@@ -500,6 +504,11 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
     if (this.fitStrategy && typeof this.fitStrategy === 'string' ) {
       params['fit'] = this.fitStrategy
+    }
+
+    if (this.focalPoint && typeof this.focalPoint === 'object' ) {
+      params['fp-x'] = this.focalPoint[0]
+      params['fp-y'] = this.focalPoint[1]
     }
 
     return params
@@ -555,7 +564,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
         this.loadNodeContent()
       }
       this._initViewportLoading()
-    }   
+    }
   }
 
   protected subscribeResizing () {
