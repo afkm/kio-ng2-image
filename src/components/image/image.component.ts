@@ -507,8 +507,13 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
     }
 
     if (this.focalPoint && typeof this.focalPoint === 'object' ) {
+      params['crop'] = 'focalpoint'
       params['fp-x'] = this.focalPoint[0]
       params['fp-y'] = this.focalPoint[1]
+
+      if(this.focalPoint.length > 2) {
+        params['fp-z'] = this.focalPoint[2]
+      }
     }
 
     return params
