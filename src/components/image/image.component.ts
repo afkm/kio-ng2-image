@@ -164,13 +164,13 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
 
   set imageSize ( size:any ) {
     size = roundSize ( size )
-    if ( !this.imageContainer.nativeElement.isConnected ) {
+    /*if ( !this.imageContainer.nativeElement.isConnected ) {
       if ( isDevMode() && this.moduleConfig.debugging === true ) {
         console.warn(`Tried to resize image ${this.node.cuid} while element is not connected.`)
       }
-    } else {
+    } else {*/
       this.imageSizeChanges.emit(size)
-    }
+    //}
   }
 
 
