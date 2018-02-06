@@ -99,7 +99,7 @@ export class ImageComponent extends ContentDataComponent implements AfterViewIni
   onImageLoad(event:any):void{
     this.isLoading = false
     this.updateContentState ( KioContentState.loaded )
-    this.load.emit()
+    this.load.emit(this.imageUrl)
 
     if ( this.withPreview !== false ) {
       if ( this.getScale() < 1 ) {
